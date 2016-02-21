@@ -34,6 +34,7 @@ public class Lwjgl extends Thread {
     private GLFWErrorCallback errorCallback;
     private GLFWKeyCallback keyCallback;
     private GLFWWindowSizeCallback windowSizeCallback;
+    private GLFWWindowPosCallback windowPosCallback;
     private GLFWWindowFocusCallback windowFocusCallback;
     private GLFWScrollCallback scrollCallback;
     private InputStream mapIs;
@@ -69,7 +70,7 @@ public class Lwjgl extends Thread {
         height = Settings.glfw_window_height;
 
         // Create the window
-        window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(width, height, "FAHeightmap", NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -80,8 +81,8 @@ public class Lwjgl extends Thread {
         // Center our window
         glfwSetWindowPos(
                 window,
-                (vidmode.width() - width) / 2,
-                (vidmode.height() - height) / 2
+                Settings.glfw_window_posx,
+                Settings.glfw_window_posy
         );
 
         // Make the OpenGL context current
@@ -118,6 +119,14 @@ public class Lwjgl extends Thread {
                 } else {
                     GL11.glViewport(0, 0, height, height);
                 }
+            }
+        });
+
+        glfwSetWindowPosCallback(window, windowPosCallback = new GLFWWindowPosCallback() {
+            @Override
+            public void invoke(long window, int xpos, int ypos) {
+                Settings.glfw_window_posx = xpos;
+                Settings.glfw_window_posy = ypos;
             }
         });
 

@@ -33,9 +33,11 @@ public class MainUIController {
     @FXML
     public void loadMap(){
         FileChooser fc = new FileChooser();
+        fc.setInitialDirectory(new File(Settings.path));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("SupCom-Map","*.scmap"));
         File f = fc.showOpenDialog(stage);
         if(f!=null) {
+            Settings.path = f.getParent();
             try {
                 lwjgl.loadMap(new FileInputStream(f),f.getName());
             } catch (FileNotFoundException e) {

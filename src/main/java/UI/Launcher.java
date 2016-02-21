@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 
 import static UI.Logger.*;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
@@ -53,6 +54,36 @@ public class Launcher extends Application{
             public void handle(WindowEvent event) {
                 // TODO terminate glfw
                 exit();
+            }
+        });
+
+        primaryStage.setWidth(Settings.tool_window_width);
+        primaryStage.setHeight(Settings.tool_window_height);
+        primaryStage.setX(Settings.tool_window_posx);
+        primaryStage.setY(Settings.tool_window_posy);
+
+        primaryStage.widthProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                Settings.tool_window_width = newValue.intValue();
+            }
+        });
+        primaryStage.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                Settings.tool_window_height = newValue.intValue();
+            }
+        });
+        primaryStage.xProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                Settings.tool_window_posx = newValue.intValue();
+            }
+        });
+        primaryStage.yProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                Settings.tool_window_posy = newValue.intValue();
             }
         });
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
