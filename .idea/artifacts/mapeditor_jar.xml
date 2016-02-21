@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="mapeditor:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/mapeditor_jar</output-path>
+    <root id="archive" name="mapeditor.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="mapeditor" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.lwjgl/lwjgl/3.0.0b/e5753ecf8c2232243c4ddae0a901acf9cb7f5f57/lwjgl-3.0.0b.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

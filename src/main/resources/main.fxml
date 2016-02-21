@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.MainUIController">
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#loadMap" text="Open" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ListView prefHeight="200.0" prefWidth="200.0" />
+      <VBox spacing="4.0">
+         <children>
+            <AnchorPane VBox.vgrow="NEVER">
+               <children>
+                  <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="6.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="2.0" />
+                  <MenuButton layoutX="34.0" layoutY="6.0" mnemonicParsing="false" text="MenuButton" AnchorPane.leftAnchor="40.0">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                      <MenuItem mnemonicParsing="false" text="Action 2" />
+                    </items>
+                  </MenuButton>
+               </children>
+            </AnchorPane>
+            <AnchorPane>
+               <children>
+                  <Label text="Size:" AnchorPane.leftAnchor="5.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+                  <Slider layoutY="17.0" prefHeight="14.0" prefWidth="177.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+               </children>
+            </AnchorPane>
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </VBox>
+   </children>
+</VBox>
