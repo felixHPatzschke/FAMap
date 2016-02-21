@@ -19,21 +19,23 @@ import static UI.Logger.*;
 public class Launcher extends Application{
 
     public static void main(String[] args){
-        setNatives();
         try {
             logInit(true, true);
         } catch (IOException e) {
             return;
         }
+        setNatives();
         launch();
     }
 
     public static void setNatives(){
         Path p = new File("natives").toPath();
         if(Files.isDirectory(p)) {
-            logOut("Using local natives!");
+            logOut("Using local natives", false);
             System.setProperty("org.lwjgl.librarypath", "natives");
         }else{
+            logOut("Using external natives", false);
+            //System.setProperty("org.lwjgl.librarypath", "C:\\LWJGL\\lwjgl-3.0.0\\native");
             System.setProperty("org.lwjgl.librarypath", "E:\\Documents\\Projects\\_LIBS\\LWJGL3.0.0b\\natives");
         }
     }
