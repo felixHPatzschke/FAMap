@@ -8,6 +8,8 @@ package FAProps;
 import java.io.File;
 import java.io.IOException;
 
+import static UI.Logger.logOut;
+
 /**
  *
  * @author bhofmann
@@ -22,20 +24,20 @@ public class MapDetails {
     public MapDetails(String name, MapReader map) throws IOException {
         this.name=name;
         previewSize = map.getInt32();
-        System.out.println("Preview Size    : " + previewSize);
+        logOut("Preview Size    : " + previewSize);
         map.skip(previewSize);
         version = map.getInt32();
         map.setVersion(version);
-        System.out.println("Map Version     : " + version);
+        logOut("Map Version     : " + version);
         width = map.getInt32();
         height = map.getInt32();
-        System.out.println("Width           : " + width);
-        System.out.println("Height          : " + height);
+        logOut("Width           : " + width);
+        logOut("Height          : " + height);
         heightmapScale = map.getFloat();
         heightmap = new int[width + 1][height + 1];
         int i = 0, j;
-        System.out.println("---------");
-        System.out.println("Heightmap");
+        logOut("---------");
+        logOut("Heightmap");
         while (i < width + 1) {
             j = 0;
             while (j < height + 1) {
@@ -44,7 +46,7 @@ public class MapDetails {
             }
             i++;
         }
-        System.out.println("---------");
+        logOut("---------");
         if (map.getVersion() > 53) {
             map.skip(1);
         }

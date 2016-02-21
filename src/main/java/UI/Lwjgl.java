@@ -286,13 +286,13 @@ public class Lwjgl extends Thread {
 
     public void run() {
         try {
-            System.out.println("Starting");
+            logOut("Starting");
             init();
-            System.out.println("Init successful");
+            logOut("Init successful");
             loop();
 
             // Release window and window callbacks
-            System.out.println("Terminating");
+            logOut("Terminating");
             glfwDestroyWindow(window);
         } finally {
             // Terminate GLFW and release the GLFWErrorCallback

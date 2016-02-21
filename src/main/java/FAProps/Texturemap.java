@@ -9,6 +9,8 @@ import OpenGL.MapColor;
 
 import java.io.IOException;
 
+import static UI.Logger.logOut;
+
 /**
  *
  * @author bhofmann
@@ -19,7 +21,7 @@ public class Texturemap {
 
     public Texturemap(MapReader map, int version) throws IOException {
         int length = map.getInt32()-128;
-        System.out.println("Texturemap: "+length);
+        logOut("Texturemap: "+length);
         int sidelen= (int) Math.sqrt(length);
 
         texturemap1 = new MapColor[sidelen][sidelen];

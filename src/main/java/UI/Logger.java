@@ -48,25 +48,25 @@ public abstract class Logger {
         return res;
     }
 
-    public static void logOut(String msg)
+    public static void logOut(Object msg)
     {
         if( console_output || file_output )
         {
             msg = ("Info " + getLineInfo() + "\n" + msg + "\n");
-            LOGGER.log(Level.INFO, msg);
+            LOGGER.log(Level.INFO, msg.toString());
             if(console_output)
             {
-                System.out.println(msg);
+                logOut(msg);
             }
         }
     }
 
-    public static void logErr(String msg)
+    public static void logErr(Object msg)
     {
         if( console_output || file_output )
         {
             msg = ("Error " + getLineInfo() + "\n" + msg + "\n");
-            LOGGER.log(Level.SEVERE, msg);
+            LOGGER.log(Level.SEVERE, msg.toString());
             if(console_output)
             {
                 System.err.println(msg);
@@ -74,7 +74,7 @@ public abstract class Logger {
         }
     }
 
-    public static void logOut(String msg, boolean lineInfo)
+    public static void logOut(Object msg, boolean lineInfo)
     {
         if( console_output || file_output )
         {
@@ -82,15 +82,15 @@ public abstract class Logger {
             {
                 msg = ("Info " + getLineInfo() + "\n" + msg + "\n");
             }
-            LOGGER.log(Level.INFO, msg);
+            LOGGER.log(Level.INFO, msg.toString());
             if(console_output)
             {
-                System.out.println(msg);
+                logOut(msg);
             }
         }
     }
 
-    public static void logErr(String msg, boolean lineInfo)
+    public static void logErr(Object msg, boolean lineInfo)
     {
         if( console_output || file_output )
         {
@@ -98,7 +98,7 @@ public abstract class Logger {
             {
                 msg = ("Error " + getLineInfo() + "\n" + msg + "\n");
             }
-            LOGGER.log(Level.SEVERE, msg);
+            LOGGER.log(Level.SEVERE, msg.toString());
             if(console_output)
             {
                 System.err.println(msg);

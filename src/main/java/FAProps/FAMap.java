@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import static UI.Logger.logOut;
+
 /**
  *
  * @author Basti_Temp
@@ -42,12 +44,12 @@ public class FAMap {
         ){
             if (reader.getChar() == 'M' && reader.getChar() == 'a' && reader.getChar() == 'p') {
                 reader.skip(1); // skip 1 byte of MAP_MAGIC
-                System.out.println("2               : " + reader.getInt32());
-                System.out.println("EDFE EFBE       : " + Boolean.toString(reader.getInt32() == -1091567891));
-                System.out.println("2 (usually)     : " + reader.getInt32());
+                logOut("2               : " + reader.getInt32());
+                logOut("EDFE EFBE       : " + Boolean.toString(reader.getInt32() == -1091567891));
+                logOut("2 (usually)     : " + reader.getInt32());
                 reader.skip(8); //It's a secret
-                System.out.println("0               : " + reader.getInt32());
-                System.out.println("0               : " + reader.getInt16());
+                logOut("0               : " + reader.getInt32());
+                logOut("0               : " + reader.getInt16());
 
                 mapDetails = new MapDetails(name,reader);
                 terrainShader = new TerrainShader(reader);
@@ -57,9 +59,9 @@ public class FAMap {
                     waveTexture[i] = new WaveTexture(reader);
                     i++;
                 }
-                System.out.println("Loaded WaveTextures");
+                logOut("Loaded WaveTextures");
                 count = reader.getInt32();
-                System.out.println(count);
+                logOut(count,false);
                 i = 0;
                 while (i < count) {
                     waveGenerators.add(new WaveGenerator(reader));
@@ -68,7 +70,7 @@ public class FAMap {
                 i = 0;
 
                 if (mapDetails.getVersion() < 56) {
-                    System.out.println("Tileset: " + reader.getString());
+                    logOut("Tileset: " + reader.getString());
                     while (i <= 4) {
                         layers[i] = new Layer(reader, false);
                         i++;
@@ -119,7 +121,7 @@ public class FAMap {
                     reader.skip(8);// It's not better to choose how many bytes to skip
                 }
                 count = reader.getInt32();
-                System.out.println("Loading " + count + " Decals");
+                logOut("Loading " + count + " Decals");
                 i = 0;
                 while (i < count) {
                     decals.add(new Decal(reader));
@@ -127,16 +129,16 @@ public class FAMap {
                 }
 
                 count = reader.getInt32();
-                System.out.println("Loading " + count + " DecalGroups");
+                logOut("Loading " + count + " DecalGroups");
                 i = 0;
                 while (i < count) {
                     decalGroups.add(new DecalGroup(reader));
                     i++;
                 }
 
-                System.out.println("Dimensions OK:    : " + (reader.getInt32() == mapDetails.getWidth() && reader.getInt32() == mapDetails.getHeight()));
+                logOut("Dimensions OK:    : " + (reader.getInt32() == mapDetails.getWidth() && reader.getInt32() == mapDetails.getHeight()));
                 count = reader.getInt32();
-                System.out.println("Loading " + count + " Normalmap(s)");
+                logOut("Loading " + count + " Normalmap(s)");
                 normalmap = new Normalmap[count];
                 i = 0;
                 while (i < count) {
@@ -146,15 +148,15 @@ public class FAMap {
                 if (mapDetails.getVersion() < 56) {
                     reader.skip(4);
                 }
-                System.out.println("Loading Texturemap");
+                logOut("Loading Texturemap");
                 texturemap = new Texturemap(reader, mapDetails.getVersion());
 
-                System.out.println("1               : " + reader.getInt32());
+                logOut("1               : " + reader.getInt32());
 
-                System.out.println("Loading Watermap");
+                logOut("Loading Watermap");
                 waterDetails = new WaterDetails(reader, mapDetails);
 
-                System.out.println("Loading Terrain Type Data");
+                logOut("Loading Terrain Type Data");
 
                 count = mapDetails.getHeight() * mapDetails.getHeight();
                 terrainTypeData = new char[count];
@@ -169,14 +171,14 @@ public class FAMap {
                 }
 
                 count = reader.getInt32();
-                System.out.println("Loading " + count + " Props");
+                logOut("Loading " + count + " Props");
                 i = 0;
                 while (i < count) {
                     props.add(new Prop(reader));
                     i++;
                 }
                 System.gc();
-                System.out.println("Finished loading FAMap!");
+                logOut("Finished loading FAMap!");
                 loaded=true;
             }
         } catch (FileNotFoundException e) {
