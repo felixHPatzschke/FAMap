@@ -65,8 +65,8 @@ public class Lwjgl extends Thread {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
-        width = 300;
-        height = 300;
+        width = Settings.glfw_window_width;
+        height = Settings.glfw_window_height;
 
         // Create the window
         window = glfwCreateWindow(width, height, "Hello World!", NULL, NULL);
@@ -111,6 +111,8 @@ public class Lwjgl extends Thread {
                 resized = true;
                 width = w;
                 height = h;
+                Settings.glfw_window_width = w;
+                Settings.glfw_window_height = h;
                 if (width > height) {
                     GL11.glViewport(0, 0, width, width);
                 } else {
@@ -297,13 +299,19 @@ public class Lwjgl extends Thread {
             glfwDestroyWindow(window);
         } finally {
             // Terminate GLFW and release the GLFWErrorCallback
-            glfwTerminate();
-            keyCallback.release();
-            errorCallback.release();
-            scrollCallback.release();
-            windowFocusCallback.release();
-            windowSizeCallback.release();
+            terminate();
         }
+        Launcher.exit();
+    }
+
+    public void terminate()
+    {
+        glfwTerminate();
+        keyCallback.release();
+        errorCallback.release();
+        scrollCallback.release();
+        windowFocusCallback.release();
+        windowSizeCallback.release();
     }
 
     public void loadMap(InputStream is, String name) {
