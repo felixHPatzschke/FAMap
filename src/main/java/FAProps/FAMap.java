@@ -8,6 +8,7 @@ package FAProps;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -20,9 +21,9 @@ public class FAMap {
     private MapDetails mapDetails;
 
     private WaveTexture[] waveTexture = new WaveTexture[4];
-    private Deque<WaveGenerator> waveGenerators = new ArrayDeque();
-    private Deque<Decal> decals = new ArrayDeque();
-    private Deque<DecalGroup> decalGroups = new ArrayDeque();
+    private ArrayDeque<WaveGenerator> waveGenerators = new ArrayDeque();
+    private ArrayDeque<Decal> decals = new ArrayDeque();
+    private ArrayDeque<DecalGroup> decalGroups = new ArrayDeque();
     private Layer[] layers = new Layer[11];
     private Normalmap[] normalmap;
     private Texturemap texturemap;
@@ -30,14 +31,14 @@ public class FAMap {
     private WaterShader waterShader;
     private WaterDetails waterDetails;
     private char[] terrainTypeData;
-    private Deque<Prop> props = new ArrayDeque();
+    private ArrayDeque<Prop> props = new ArrayDeque();
 
     private boolean loaded=false;
 
-    public void loadFAMap(File f) {
+    public void loadFAMap(InputStream is,String name) {
         int i, count;
         try(
-                MapReader reader = new MapReader(f);
+                MapReader reader = new MapReader(is)
         ){
             if (reader.getChar() == 'M' && reader.getChar() == 'a' && reader.getChar() == 'p') {
                 reader.skip(1); // skip 1 byte of MAP_MAGIC
@@ -48,7 +49,7 @@ public class FAMap {
                 System.out.println("0               : " + reader.getInt32());
                 System.out.println("0               : " + reader.getInt16());
 
-                mapDetails = new MapDetails(f,reader);
+                mapDetails = new MapDetails(name,reader);
                 terrainShader = new TerrainShader(reader);
                 waterShader = new WaterShader(reader);
                 i = 0;

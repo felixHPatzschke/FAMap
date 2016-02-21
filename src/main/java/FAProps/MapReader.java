@@ -16,8 +16,8 @@ public class MapReader implements AutoCloseable{
     private BufferedInputStream map;
     private int version = 0;
 
-    public MapReader(File f) throws FileNotFoundException {
-        map = new BufferedInputStream(new FileInputStream(f));
+    public MapReader(InputStream is){
+        map = new BufferedInputStream(is);
     }
 
     public void setVersion(int version) {

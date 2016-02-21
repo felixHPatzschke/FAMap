@@ -14,6 +14,9 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +35,8 @@ public class Lwjgl extends Thread {
     private GLFWWindowSizeCallback windowSizeCallback;
     private GLFWWindowFocusCallback windowFocusCallback;
     private GLFWScrollCallback scrollCallback;
-    private File mapFile;
+    private InputStream mapIs;
+    private String mapName;
 
     private long window;
 
@@ -44,7 +48,7 @@ public class Lwjgl extends Thread {
     private List<Renderable> renderablesList = new ArrayList<>();
 
     private int height, width;
-    private boolean resized,input=true, mouseLocked = false, focused = true;
+    private boolean resized, input = true, mouseLocked = false, focused = true;
 
     private void init() {
         // Setup an error callback. The default implementation
@@ -90,7 +94,7 @@ public class Lwjgl extends Thread {
     private void loop() {
         GL.createCapabilities();
 
-        renderablesList.add(0,renderableMap);
+        renderablesList.add(0, renderableMap);
 
         s = new Shader("simple");
 
@@ -106,29 +110,29 @@ public class Lwjgl extends Thread {
                 resized = true;
                 width = w;
                 height = h;
-                if(width>height) {
+                if (width > height) {
                     GL11.glViewport(0, 0, width, width);
-                }else{
+                } else {
                     GL11.glViewport(0, 0, height, height);
                 }
             }
         });
 
-        glfwSetScrollCallback(window, scrollCallback= new GLFWScrollCallback() {
+        glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback() {
 
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
-                float speed=1f;
+                float speed = 1f;
 
-                yoffset=yoffset*10;
+                yoffset = yoffset * 10;
 
-                if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS){
-                    speed=speed*(1/map.getMapDetails().getHeightmapScale());
+                if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+                    speed = speed * (1 / map.getMapDetails().getHeightmapScale());
                 }
-                if(glfwGetKey(window,GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS){
-                    speed=speed/(1/map.getMapDetails().getHeightmapScale());
+                if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+                    speed = speed / (1 / map.getMapDetails().getHeightmapScale());
                 }
-                camera.setTranslationZ((float) (camera.getTranslationZ()+yoffset*speed));
+                camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
             }
         });
 
@@ -142,9 +146,9 @@ public class Lwjgl extends Thread {
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
                     //camera.init(s);
                     mouseLocked = !mouseLocked;
-                    if(mouseLocked){
+                    if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-                    }else{
+                    } else {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                     }
                 }
@@ -154,11 +158,7 @@ public class Lwjgl extends Thread {
         glfwSetWindowFocusCallback(window, windowFocusCallback = new GLFWWindowFocusCallback() {
             @Override
             public void invoke(long window, int foc) {
-                if (foc == 1) {
-                    focused = true;
-                } else {
-                    focused = false;
-                }
+                focused = foc == 1;
             }
         });
 
@@ -168,17 +168,18 @@ public class Lwjgl extends Thread {
 
             s.bind();
 
-            if(mapFile!=null){
+            if (mapIs != null) {
                 renderableMap.remove();
                 renderableMap.setMapRenderer(mapRenderer);
                 map = new FAMap();
-                map.loadFAMap(mapFile);
+                map.loadFAMap(mapIs, mapName);
                 renderableMap.setMap(map);
-                mapFile=null;
+                mapIs = null;
             }
 
+
             if (resized) {
-                camera.setViewport(width,height);
+                camera.setViewport(width, height);
                 resized = false;
             }
 
@@ -187,37 +188,33 @@ public class Lwjgl extends Thread {
 
             camera.applyMatrix(s);
 
-            for (Renderable r:renderablesList) {
-                if(r.isRenderable()){
+            for (Renderable r : renderablesList) {
+                if (r.isRenderable()) {
                     r.applyMatrix(s);
                     r.render(camera);
                 }
             }
 
-            if(map!=null) {
+            if (map != null) {
                 if (map.isLoaded()) {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName());
                 }
             }
             s.unbind();
             glfwSwapBuffers(window);
-            if(input){
+            if (input) {
                 glfwPollEvents();
-                input=false;
-            }else{
+                input = false;
+            } else {
                 glfwWaitEvents();
             }
-        }
-
-        if (map != null) {
-
         }
 
         s.unbind();
         s.destroy();
     }
 
-    private int oldX=0,oldY=0;
+    private int oldX = 0, oldY = 0;
 
     private void mouseMovement() {
         if (focused) {
@@ -231,10 +228,10 @@ public class Lwjgl extends Thread {
             int dX = width / 2 - (int) x.get();
             int dY = height / 2 - (int) y.get();
 
-            if(dX!=oldX||dY!=oldY) {
+            if (dX != oldX || dY != oldY) {
 
-                oldX=dX;
-                oldY=dY;
+                oldX = dX;
+                oldY = dY;
 
                 input = true;
 
@@ -250,38 +247,38 @@ public class Lwjgl extends Thread {
         }
     }
 
-    private void keyboardInput(){
-        float speed=1f;
+    private void keyboardInput() {
+        float speed = 1f;
 
-        if(glfwGetKey(window,GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS){
-            speed=speed*5;
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            speed = speed * 5;
         }
-        if(glfwGetKey(window,GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS){
-            speed=speed/5;
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+            speed = speed / 5;
         }
 
-        Vector2 transl = new Vector2(0,0);
+        Vector2 transl = new Vector2(0, 0);
 
-        if(glfwGetKey(window,GLFW_KEY_W)==GLFW_PRESS){
-            transl.y-=speed;
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            transl.y -= speed;
         }
-        if(glfwGetKey(window,GLFW_KEY_S)==GLFW_PRESS){
-            transl.y+=speed;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            transl.y += speed;
         }
-        if(glfwGetKey(window,GLFW_KEY_D)==GLFW_PRESS){
-            transl.x-=speed;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            transl.x -= speed;
         }
-        if(glfwGetKey(window,GLFW_KEY_A)==GLFW_PRESS){
-            transl.x+=speed;
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            transl.x += speed;
         }
-        if(glfwGetKey(window,GLFW_KEY_KP_ADD)==GLFW_PRESS){
-            camera.setTranslationZ(camera.getTranslationZ()-(speed*10));
+        if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
+            camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
         }
-        if(glfwGetKey(window,GLFW_KEY_KP_SUBTRACT)==GLFW_PRESS){
-            camera.setTranslationZ(camera.getTranslationZ()+(speed*10));
+        if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
+            camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
         }
-        if(transl.x!=0||transl.y!=0) {
-            input=true;
+        if (transl.x != 0 || transl.y != 0) {
+            input = true;
             //transl.rotate(-camera.getEyeZ());
             camera.addTranslation((float) transl.x, (float) transl.y, 0);
         }
@@ -289,10 +286,13 @@ public class Lwjgl extends Thread {
 
     public void run() {
         try {
+            System.out.println("Starting");
             init();
+            System.out.println("Init successful");
             loop();
 
             // Release window and window callbacks
+            System.out.println("Terminating");
             glfwDestroyWindow(window);
         } finally {
             // Terminate GLFW and release the GLFWErrorCallback
@@ -305,7 +305,8 @@ public class Lwjgl extends Thread {
         }
     }
 
-    public void loadMap(File f) {
-        mapFile=f;
+    public void loadMap(InputStream is, String name) {
+        mapIs = is;
+        mapName = name;
     }
 }

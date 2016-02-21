@@ -6,6 +6,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -34,7 +36,11 @@ public class MainUIController {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("SupCom-Map","*.scmap"));
         File f = fc.showOpenDialog(stage);
         if(f!=null) {
-            lwjgl.loadMap(f);
+            try {
+                lwjgl.loadMap(new FileInputStream(f),f.getName());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

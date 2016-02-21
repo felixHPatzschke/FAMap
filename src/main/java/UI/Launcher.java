@@ -15,6 +15,11 @@ import java.nio.file.Path;
  */
 public class Launcher extends Application{
     public static void main(String[] args){
+        setNatives();
+        launch();
+    }
+
+    public static void setNatives(){
         Path p = new File("natives").toPath();
         if(Files.isDirectory(p)) {
             System.out.println("Using local natives!");
@@ -22,7 +27,6 @@ public class Launcher extends Application{
         }else{
             System.setProperty("org.lwjgl.librarypath", "E:\\Documents\\Projects\\_LIBS\\LWJGL3.0.0b\\natives");
         }
-        launch();
     }
 
     @Override

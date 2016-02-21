@@ -73,7 +73,7 @@ public class Shader {
 
     private static String fileToString(String path) {
         try (
-                InputStreamReader reader = new InputStreamReader(Shader.class.getResourceAsStream(path));
+                InputStreamReader reader = new InputStreamReader(Shader.class.getResourceAsStream(path))
         ) {
             StringBuilder builder = new StringBuilder();
 

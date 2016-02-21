@@ -19,8 +19,8 @@ public class MapDetails {
     private int[][] heightmap;
     private String name;
 
-    public MapDetails(File f, MapReader map) throws IOException {
-        name=f.getName();
+    public MapDetails(String name, MapReader map) throws IOException {
+        this.name=name;
         previewSize = map.getInt32();
         System.out.println("Preview Size    : " + previewSize);
         map.skip(previewSize);
