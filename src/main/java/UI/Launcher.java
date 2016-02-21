@@ -7,22 +7,31 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import static UI.Logger.*;
 
 /**
  * Created by Game on 01.01.2016.
  */
 public class Launcher extends Application{
+
     public static void main(String[] args){
         setNatives();
+        try {
+            logInit(true, true);
+        } catch (IOException e) {
+            return;
+        }
         launch();
     }
 
     public static void setNatives(){
         Path p = new File("natives").toPath();
         if(Files.isDirectory(p)) {
-            System.out.println("Using local natives!");
+            logOut("Using local natives!");
             System.setProperty("org.lwjgl.librarypath", "natives");
         }else{
             System.setProperty("org.lwjgl.librarypath", "E:\\Documents\\Projects\\_LIBS\\LWJGL3.0.0b\\natives");
