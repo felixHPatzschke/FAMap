@@ -27,7 +27,6 @@ public class ViewMatrixTest {
     public void testAsBuffer(){
         Matrix matrix = new Matrix();
         FloatBuffer fb = matrix.getAsBuffer();
-        fb.flip();
         float[] test={
                 1,0,0,0,
                 0,1,0,0,

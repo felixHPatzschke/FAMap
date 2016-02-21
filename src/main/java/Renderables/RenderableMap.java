@@ -17,6 +17,7 @@ public class RenderableMap extends Renderable {
     private int iboId=-1;
 
     public RenderableMap(){
+        eyeX=-90;
     }
 
     public void setMapRenderer(MapRenderer mapRenderer){
