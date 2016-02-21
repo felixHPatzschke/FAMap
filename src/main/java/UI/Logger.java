@@ -52,11 +52,18 @@ public abstract class Logger {
     {
         if( console_output || file_output )
         {
-            msg = ("Info " + getLineInfo() + "\n" + msg + "\n");
-            LOGGER.log(Level.INFO, msg.toString());
+            String smsg;
+            if(msg instanceof Throwable)
+            {
+                smsg = ("Info " + getLineInfo() + "\n" + msg.toString() + "\n");
+            }else
+            {
+                smsg = (msg.toString());
+            }
+            LOGGER.log(Level.INFO, smsg);
             if(console_output)
             {
-                logOut(msg);
+                System.out.println(smsg);
             }
         }
     }
@@ -65,11 +72,12 @@ public abstract class Logger {
     {
         if( console_output || file_output )
         {
-            msg = ("Error " + getLineInfo() + "\n" + msg + "\n");
-            LOGGER.log(Level.SEVERE, msg.toString());
+            String smsg;
+            smsg = ("Error " + getLineInfo() + "\n" + msg.toString() + "\n");
+            LOGGER.log(Level.SEVERE, smsg);
             if(console_output)
             {
-                System.err.println(msg);
+                System.err.println(smsg);
             }
         }
     }
@@ -78,14 +86,18 @@ public abstract class Logger {
     {
         if( console_output || file_output )
         {
+            String smsg;
             if(lineInfo)
             {
-                msg = ("Info " + getLineInfo() + "\n" + msg + "\n");
+                smsg = ("Info " + getLineInfo() + "\n" + msg.toString() + "\n");
+            }else
+            {
+                smsg = msg.toString();
             }
-            LOGGER.log(Level.INFO, msg.toString());
+            LOGGER.log(Level.INFO, smsg);
             if(console_output)
             {
-                logOut(msg);
+                System.out.println(smsg);
             }
         }
     }
@@ -94,14 +106,18 @@ public abstract class Logger {
     {
         if( console_output || file_output )
         {
+            String smsg;
             if(lineInfo)
             {
-                msg = ("Error " + getLineInfo() + "\n" + msg + "\n");
+                smsg = ("Error " + getLineInfo() + "\n" + msg.toString() + "\n");
+            }else
+            {
+                smsg = msg.toString();
             }
-            LOGGER.log(Level.SEVERE, msg.toString());
+            LOGGER.log(Level.SEVERE, smsg);
             if(console_output)
             {
-                System.err.println(msg);
+                System.err.println(smsg);
             }
         }
     }

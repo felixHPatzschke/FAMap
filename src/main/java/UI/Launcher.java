@@ -31,10 +31,10 @@ public class Launcher extends Application{
     public static void setNatives(){
         Path p = new File("natives").toPath();
         if(Files.isDirectory(p)) {
-            logOut("Using local natives", false);
+            logOut("Using local natives");
             System.setProperty("org.lwjgl.librarypath", "natives");
         }else{
-            logOut("Using external natives", false);
+            logOut("Using external natives");
             //System.setProperty("org.lwjgl.librarypath", "C:\\LWJGL\\lwjgl-3.0.0\\native");
             System.setProperty("org.lwjgl.librarypath", "E:\\Documents\\Projects\\_LIBS\\LWJGL3.0.0b\\natives");
         }
