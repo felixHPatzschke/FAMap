@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
  */
 public class MainUIController {
 
-    private Lwjgl lwjgl;
+    private static Lwjgl lwjgl;
 
     private Stage stage;
 
@@ -44,5 +44,16 @@ public class MainUIController {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void exit(int exitValue)
+    {
+        Settings.exportCONFIG();
+        System.exit(exitValue);
+    }
+
+    public static void exit()
+    {
+        lwjgl.stopThread();
     }
 }

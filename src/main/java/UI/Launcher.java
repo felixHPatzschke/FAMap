@@ -53,7 +53,7 @@ public class Launcher extends Application{
             @Override
             public void handle(WindowEvent event) {
                 // TODO terminate glfw
-                exit();
+                MainUIController.exit();
             }
         });
 
@@ -94,18 +94,4 @@ public class Launcher extends Application{
         controller.setStage(primaryStage);
         primaryStage.show();
     }
-
-    public static void exit(int exitValue)
-    {
-        Settings.exportCONFIG();
-
-
-        System.exit(exitValue);
-    }
-
-    public static void exit()
-    {
-        exit(0);
-    }
-
 }

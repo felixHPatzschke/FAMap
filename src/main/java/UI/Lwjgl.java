@@ -4,7 +4,6 @@ import FAProps.FAMap;
 import FAProps.Vector2;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
-import OpenGL.Matrix;
 import OpenGL.Shader;
 import Renderables.Camera;
 import Renderables.Renderable;
@@ -13,18 +12,15 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
-import java.util.List;
 
+import static UI.Logger.logErr;
+import static UI.Logger.logOut;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
-import static UI.Logger.*;
 
 /**
  * Created by Game on 01.01.2016.
@@ -47,7 +43,7 @@ public class Lwjgl extends Thread {
     private MapRenderer mapRenderer = new HeightmapRenderer();
     private Camera camera = new Camera();
     private RenderableMap renderableMap = new RenderableMap();
-    private List<Renderable> renderablesList = new ArrayList<>();
+    private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
     private int height, width;
     private boolean resized, input = true, mouseLocked = false, focused = true;
@@ -150,6 +146,7 @@ public class Lwjgl extends Thread {
 
         s.unbind();
 
+
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
@@ -221,9 +218,6 @@ public class Lwjgl extends Thread {
                 glfwWaitEvents();
             }
         }
-
-        s.unbind();
-        s.destroy();
     }
 
     private int oldX = 0, oldY = 0;
@@ -296,31 +290,42 @@ public class Lwjgl extends Thread {
         }
     }
 
+    public void cleanup(){
+        s.unbind();
+        s.destroy();
+        for (Renderable r : renderablesList) {
+            r.remove();
+        }
+        keyCallback.release();
+        errorCallback.release();
+        windowPosCallback.release();
+        scrollCallback.release();
+        windowFocusCallback.release();
+        windowSizeCallback.release();
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
+
     public void run() {
         try {
             logOut("Starting");
             init();
             logOut("Init successful");
             loop();
-
             // Release window and window callbacks
             logOut("Terminating");
-            glfwDestroyWindow(window);
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
         } finally {
-            // Terminate GLFW and release the GLFWErrorCallback
-            terminate();
+            logOut("Cleaning up");
+            cleanup();
         }
-        Launcher.exit();
+        MainUIController.exit(0);
     }
 
-    public void terminate()
-    {
-        glfwTerminate();
-        keyCallback.release();
-        errorCallback.release();
-        scrollCallback.release();
-        windowFocusCallback.release();
-        windowSizeCallback.release();
+    public void stopThread(){
+        glfwSetWindowShouldClose(window,GLFW_TRUE);
+        glfwPostEmptyEvent();
     }
 
     public void loadMap(InputStream is, String name) {
