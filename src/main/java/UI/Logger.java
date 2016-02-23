@@ -48,51 +48,64 @@ public abstract class Logger {
         return res;
     }
 
-    public static void logOut(Object msg)
+    public static void logOut(Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg;
-            if(msg instanceof Throwable)
+            String smsg = "";
+            boolean exc = false;
+            for(Object x : msg)
             {
-                smsg = ("Info " + getLineInfo() + "\n" + msg.toString() + "\n");
-            }else
+                if(x instanceof Throwable)
+                {
+                    exc = true;
+                }
+            }
+            if(exc)
             {
-                smsg = (msg.toString());
+                smsg = "Info " + getLineInfo() + "\n";
+            }
+            for(Object x : msg)
+            {
+                smsg = smsg + x.toString() + "\n";
             }
             LOGGER.log(Level.INFO, smsg);
             if(console_output)
             {
-                System.out.println(smsg);
+                System.out.print(smsg);
             }
         }
     }
 
-    public static void logErr(Object msg)
+    public static void logErr(Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg;
-            smsg = ("Error " + getLineInfo() + "\n" + msg.toString() + "\n");
+            String smsg = "Error " + getLineInfo() + "\n";
+            for(Object x : msg)
+            {
+                smsg = smsg + x.toString() + "\n";
+            }
             LOGGER.log(Level.SEVERE, smsg);
             if(console_output)
             {
-                System.err.println(smsg);
+                System.err.print(smsg);
             }
         }
     }
 
-    public static void logOut(Object msg, boolean lineInfo)
+    public static void logOut(boolean lineInfo, Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg;
+            String smsg = "";
             if(lineInfo)
             {
-                smsg = ("Info " + getLineInfo() + "\n" + msg.toString() + "\n");
-            }else
+                smsg = "Info " + getLineInfo() + "\n";
+            }
+            for(Object x : msg)
             {
-                smsg = msg.toString();
+                smsg = smsg + x.toString() + "\n";
             }
             LOGGER.log(Level.INFO, smsg);
             if(console_output)
@@ -102,17 +115,18 @@ public abstract class Logger {
         }
     }
 
-    public static void logErr(Object msg, boolean lineInfo)
+    public static void logErr(boolean lineInfo, Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg;
+            String smsg = "";
             if(lineInfo)
             {
-                smsg = ("Error " + getLineInfo() + "\n" + msg.toString() + "\n");
-            }else
+                smsg = "Error " + getLineInfo() + "\n";
+            }
+            for(Object x : msg)
             {
-                smsg = msg.toString();
+                smsg = smsg + x.toString() + "\n";
             }
             LOGGER.log(Level.SEVERE, smsg);
             if(console_output)
