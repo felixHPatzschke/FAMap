@@ -5,9 +5,7 @@ import FAProps.Vector2;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import OpenGL.Shader;
-import Renderables.Camera;
-import Renderables.Renderable;
-import Renderables.RenderableMap;
+import Renderables.*;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -42,6 +40,7 @@ public class Lwjgl extends Thread {
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
     private Camera camera = new Camera();
+    private Camera2 cam2 = new Camera2();
     private RenderableMap renderableMap = new RenderableMap();
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
@@ -64,6 +63,7 @@ public class Lwjgl extends Thread {
 
         width = Settings.glfw_window_width;
         height = Settings.glfw_window_height;
+        cam2.setViewport(width, height);
 
         // Create the window
         window = glfwCreateWindow(width, height, "FAHeightmap", NULL, NULL);
@@ -92,6 +92,8 @@ public class Lwjgl extends Thread {
     private void loop() {
         GL.createCapabilities();
 
+        glLineWidth(3);
+
         renderablesList.add(0, renderableMap);
 
         s = new Shader("simple");
@@ -101,6 +103,8 @@ public class Lwjgl extends Thread {
         glEnable(GL_DEPTH_TEST);
 
         s.bind();
+
+        //renderablesList.add(1, new CoordSystem());
 
         glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback() {
             @Override
@@ -141,6 +145,7 @@ public class Lwjgl extends Thread {
                     speed = speed / (1 / map.getMapDetails().getHeightmapScale());
                 }
                 camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
+                cam2.translate(0.0f, 0.0f, (float)yoffset*speed);
             }
         });
 
@@ -150,6 +155,14 @@ public class Lwjgl extends Thread {
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
+                if(action == GLFW_RELEASE)
+                {
+                    logOut("Key released:", key);
+                    if(key == GLFW_KEY_Q)
+                    {
+                        logOut("Matrices:\nCamera 1:", camera.getMatrix(), "\nCamera 2:", cam2.get_matrix());
+                    }
+                }
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                     glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
@@ -189,20 +202,26 @@ public class Lwjgl extends Thread {
 
             if (resized) {
                 camera.setViewport(width, height);
+                cam2.setViewport(width, height);
                 resized = false;
             }
 
             mouseMovement();
             keyboardInput();
 
-            camera.applyMatrix(s);
+            //camera.applyMatrix(s);
+            // TODO: switch to my camera
+            cam2.matrix_compute();
+            cam2.matrix_apply(s.getCameraMatrixLocation());
 
             for (Renderable r : renderablesList) {
                 if (r.isRenderable()) {
                     r.applyMatrix(s);
-                    r.render(camera);
+                    r.render(camera);//camera in argument is entirely useless as it seems
                 }
             }
+
+
 
             if (map != null) {
                 if (map.isLoaded()) {
@@ -245,6 +264,8 @@ public class Lwjgl extends Thread {
                     if (dX != 0 || dY != 0) {
                         glfwSetCursorPos(window, width / 2, height / 2);
                         camera.addRotation(((float) dY) / 10, 0, ((float) dX) / 10);
+                        cam2.rotate_left_right((float)dX/10.0f);
+                        cam2.rotate_up_down((float)dY/10.0f);
                     }
                 } else {
                     //TODO Add ray casting and tool code here
@@ -279,14 +300,18 @@ public class Lwjgl extends Thread {
         }
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
             camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
+            cam2.translate(0.0f, 0.0f, -10.0f*speed);
         }
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
             camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
+            cam2.translate(0.0f, 0.0f, -10.0f*speed);
         }
         if (transl.x != 0 || transl.y != 0) {
             input = true;
             //transl.rotate(-camera.getEyeZ());
             camera.addTranslation((float) transl.x, (float) transl.y, 0);
+            cam2.translate_forward((float)transl.y);
+            cam2.translate_right((float)transl.x);
         }
     }
 

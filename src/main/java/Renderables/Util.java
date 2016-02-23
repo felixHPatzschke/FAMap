@@ -23,7 +23,7 @@ public abstract class Util {
      * @param v vector to be normalized
      * @return normalized vector
      */
-    public static final float[] normalizef(float[] v)
+    public static final float[] normalize(float[] v)
     {
         float r = (float) Math.sqrt( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] );
 
@@ -48,7 +48,7 @@ public abstract class Util {
      * @param b second operand
      * @param res result
      */
-    public static final void crossf(float[] a, float[] b, float[] res)
+    public static final void cross(float[] a, float[] b, float[] res)
     {
         res[0] = a[1]*b[2] - a[2]*b[1];
         res[1] = a[2]*b[0] - a[0]*b[2];

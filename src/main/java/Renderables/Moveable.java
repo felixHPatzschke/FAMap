@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by Basti on 31.01.2016.
  */
-public abstract class Moveable {
+public class Moveable {
 
     float eyeX = 0, eyeY = 0, eyeZ = 0, translX = 0, translY = 0, translZ = 0, scaleX = 1, scaleY = 1, scaleZ = 1;
     boolean refresh=true;

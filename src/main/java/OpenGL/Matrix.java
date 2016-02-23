@@ -9,6 +9,9 @@ import java.util.Arrays;
  * Created by Game on 02.01.2016.
  */
 public class Matrix {
+
+    public static Matrix IDENTITY_MATRIX = new Matrix();
+
     float[][] matrix = new float[4][4];
 
     public static Matrix getPerspectiveMatrix(float fovy, float aspect, float near, float far) {
@@ -40,7 +43,21 @@ public class Matrix {
                 {0, 0, 0, 1}
         };
     }
-    
+
+    public String toString()
+    {
+        String res = "";
+        for(int x=0; x<4; x++)
+        {
+            for(int y=0; y<4; y++)
+            {
+                res = res + matrix[x][y] + "  ";
+            }
+            res = res + "\n";
+        }
+        return res;
+    }
+
     public Matrix(float[][] matrix) {
         this.matrix = matrix;
     }

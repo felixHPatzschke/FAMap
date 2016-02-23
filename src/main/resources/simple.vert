@@ -5,7 +5,7 @@ in vec3 color;
 
 out vec3 Color;
 
-uniform mat4 objectMatrix,cameraMatrix;
+uniform mat4 objectMatrix, cameraMatrix;
 
 void main()
 {

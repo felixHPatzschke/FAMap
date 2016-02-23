@@ -23,7 +23,7 @@ public class Camera extends Moveable {
         this.height=height;
     }
 
-    protected Matrix getMatrix() {
+    public Matrix getMatrix() {
         if(refresh) {
             result = Matrix.getPerspectiveMatrix(60,width/height,0.01f,5000);
             result = Matrix.translate(result,translX,translY,translZ);
