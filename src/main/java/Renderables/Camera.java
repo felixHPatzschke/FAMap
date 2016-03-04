@@ -5,6 +5,10 @@ import OpenGL.Shader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
+import java.util.Arrays;
+
+import static UI.Logger.logOut;
+
 /**
  * Created by Dev on 17.02.2016.
  */
@@ -26,10 +30,11 @@ public class Camera extends Moveable {
     protected Matrix getMatrix() {
         if(refresh) {
             result = Matrix.getPerspectiveMatrix(60,width/height,0.01f,5000);
-            result = Matrix.translate(result,translX,translY,translZ);
-            result = Matrix.rotate(result, eyeX, eyeY, eyeZ);
-            //result = Matrix.scale(result, scaleX, scaleY, scaleZ);
-
+            Matrix model = Matrix.scale(new Matrix(), scaleX, scaleY, scaleZ);
+            model = Matrix.rotate(model, eyeX, eyeY, eyeZ);
+            model = Matrix.translate(model,-translX,-translY,-translZ);
+            result=result.multiply(model);
+            logOut(Arrays.deepToString(result.getAsArray()));
             refresh=false;
         }
         return result;

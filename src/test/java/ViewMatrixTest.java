@@ -39,4 +39,9 @@ public class ViewMatrixTest {
             }
         }
     }
+
+    @Test
+    public void testEquals(){
+        assertTrue(new Matrix().equals(new Matrix()));
+    }
 }

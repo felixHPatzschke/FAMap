@@ -3,8 +3,6 @@ import UI.Lwjgl;
 import UI.Settings;
 import org.junit.Test;
 
-import static junit.framework.TestCase.fail;
-
 /**
  * Created by Basti on 21.02.2016.
  */
@@ -17,7 +15,7 @@ public class MapTest {
         lw.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                fail(e.toString());
+                throw new RuntimeException(e);
             }
         });
         lw.start();

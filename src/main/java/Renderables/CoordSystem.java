@@ -1,5 +1,6 @@
 package Renderables;
 
+import OpenGL.Matrix;
 import OpenGL.Tile;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -7,7 +8,11 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 import static UI.Logger.logOut;
 
@@ -16,44 +21,64 @@ import static UI.Logger.logOut;
  */
 public class CoordSystem extends Renderable {
 
-    int vbo, cbo, vao;
+    int vbo, cbo, vao, ibo;
 
     public CoordSystem() {
+        ibo = GL15.glGenBuffers();
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+        ShortBuffer indices = BufferUtils.createShortBuffer(6);
+        indices.put(new short[]{
+                0, 1,
+                2, 3,
+                4, 5
+        });
+        indices.flip();
+        GL15.glBufferData(ibo, indices, GL15.GL_STATIC_DRAW);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
         vbo = GL15.glGenBuffers();
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        FloatBuffer vertices = BufferUtils.createFloatBuffer(18);
-        vertices.put(new float[]{
-                0, 0, 0,
-                1, 0, 0,
-                0, 0, 0,
-                0, 1, 0,
-                0, 0, 0,
-                0, 0, 1
+        IntBuffer vertices = BufferUtils.createIntBuffer(18);
+        vertices.put(new int[]{
+                -100, 0, 0,
+                100, 0, 0,
+                0, -100, 0,
+                0, 100, 0,
+                0, 0, -100,
+                0, 0, 100
         });
         vertices.flip();
-        GL15.glBufferData(vbo, vertices, GL15.GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+        ByteBuffer colors = BufferUtils.createByteBuffer(18);
+        colors.put(new byte[]{
+                (byte)255, 0, 0,
+                (byte)255, 0, 0,
+                0, (byte)255, 0,
+                0, (byte)255, 0,
+                0, 0, (byte)255,
+                0, 0, (byte)255
+        });
+        colors.flip();
+
+        vao = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vao);
+
+        vbo = GL15.glGenBuffers();
+
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(0, 3, GL11.GL_INT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
         cbo = GL15.glGenBuffers();
+
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, cbo);
-        FloatBuffer colors = BufferUtils.createFloatBuffer(18);
-        colors.put(new float[]{
-                1, 0, 0,
-                1, 0, 0,
-                0, 1, 0,
-                0, 1, 0,
-                0, 0, 1,
-                0, 0, 1
-        });
-        colors.flip();
-        GL15.glBufferData(cbo, colors, GL15.GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, 0, 0);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, colors, GL15.GL_STATIC_DRAW);
+        GL20.glVertexAttribPointer(1, 3, GL11.GL_UNSIGNED_BYTE, true, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
         GL30.glBindVertexArray(0);
-        logOut(vao,vbo,cbo);
     }
 
     @Override
@@ -63,7 +88,9 @@ public class CoordSystem extends Renderable {
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
 
-        GL11.glDrawArrays(GL11.GL_LINES,0,6);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
+        GL11.glDrawElements(GL11.GL_LINES, 6, GL11.GL_UNSIGNED_SHORT, 0);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);

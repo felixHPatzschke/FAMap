@@ -18,8 +18,8 @@ public abstract class Moveable {
     protected Matrix getMatrix() {
         if(refresh) {
             result = new Matrix();
-            result = Matrix.rotate(result, eyeX, eyeY, eyeZ);
             result = Matrix.scale(result, scaleX, scaleY, scaleZ);
+            result = Matrix.rotate(result,eyeX,eyeY,eyeZ);
             result = Matrix.translate(result,translX,translY,translZ);
             refresh=false;
         }

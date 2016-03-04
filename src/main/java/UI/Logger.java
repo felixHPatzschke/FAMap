@@ -94,15 +94,12 @@ public abstract class Logger {
         }
     }
 
-    public static void logOut(boolean lineInfo, Object... msg)
+    public static void logOutI(boolean lineInfo, Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg = "";
-            if(lineInfo)
-            {
-                smsg = "Info " + getLineInfo() + "\n";
-            }
+            String smsg = "Info " + getLineInfo() + "\n";
+
             for(Object x : msg)
             {
                 smsg = smsg + x.toString() + "\n";
@@ -115,15 +112,12 @@ public abstract class Logger {
         }
     }
 
-    public static void logErr(boolean lineInfo, Object... msg)
+    public static void logErrI(boolean lineInfo, Object... msg)
     {
         if( console_output || file_output )
         {
-            String smsg = "";
-            if(lineInfo)
-            {
-                smsg = "Error " + getLineInfo() + "\n";
-            }
+            String smsg = "Error " + getLineInfo() + "\n";
+
             for(Object x : msg)
             {
                 smsg = smsg + x.toString() + "\n";
@@ -135,5 +129,4 @@ public abstract class Logger {
             }
         }
     }
-
 }

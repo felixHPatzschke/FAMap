@@ -29,7 +29,7 @@ public class RenderableMap extends Renderable {
         if(iboId==-1){
             iboId=Tile.generateIndexBuffer();
         }
-        setScale(map.getMapDetails().getWidth()/10000f,map.getMapDetails().getHeight()/10000f,map.getMapDetails().getHeightmapScale()/20f);
+        setScale(map.getMapDetails().getWidth()/10000f,map.getMapDetails().getHeight()/10000f,map.getMapDetails().getHeightmapScale()/15f);
         this.map=map;
     }
 

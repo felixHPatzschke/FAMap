@@ -6,6 +6,7 @@ import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import OpenGL.Shader;
 import Renderables.Camera;
+import Renderables.CoordSystem;
 import Renderables.Renderable;
 import Renderables.RenderableMap;
 import org.lwjgl.*;
@@ -38,7 +39,7 @@ public class Lwjgl extends Thread {
 
     private long window;
 
-    private Shader s;
+    private Shader shader;
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
     private Camera camera = new Camera();
@@ -94,13 +95,15 @@ public class Lwjgl extends Thread {
 
         renderablesList.add(0, renderableMap);
 
-        s = new Shader("simple");
+        shader = new Shader("simple");
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
 
-        s.bind();
+        shader.bind();
+
+        renderablesList.add(new CoordSystem());
 
         glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback() {
             @Override
@@ -144,7 +147,7 @@ public class Lwjgl extends Thread {
             }
         });
 
-        s.unbind();
+        shader.unbind();
 
 
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
@@ -153,7 +156,7 @@ public class Lwjgl extends Thread {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                     glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
-                    //camera.init(s);
+                    //camera.init(shader);
                     mouseLocked = !mouseLocked;
                     if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
@@ -175,7 +178,7 @@ public class Lwjgl extends Thread {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            s.bind();
+            shader.bind();
 
             if (mapIs != null) {
                 renderableMap.remove();
@@ -195,11 +198,11 @@ public class Lwjgl extends Thread {
             mouseMovement();
             keyboardInput();
 
-            camera.applyMatrix(s);
+            camera.applyMatrix(shader);
 
             for (Renderable r : renderablesList) {
                 if (r.isRenderable()) {
-                    r.applyMatrix(s);
+                    r.applyMatrix(shader);
                     r.render(camera);
                 }
             }
@@ -209,7 +212,7 @@ public class Lwjgl extends Thread {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName());
                 }
             }
-            s.unbind();
+            shader.unbind();
             glfwSwapBuffers(window);
             if (input) {
                 glfwPollEvents();
@@ -291,8 +294,8 @@ public class Lwjgl extends Thread {
     }
 
     public void cleanup(){
-        s.unbind();
-        s.destroy();
+        shader.unbind();
+        shader.destroy();
         for (Renderable r : renderablesList) {
             r.remove();
         }
@@ -306,6 +309,7 @@ public class Lwjgl extends Thread {
         glfwTerminate();
     }
 
+    @Override
     public void run() {
         try {
             logOut("Starting");

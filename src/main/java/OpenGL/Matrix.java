@@ -8,8 +8,17 @@ import java.util.Arrays;
 /**
  * Created by Game on 02.01.2016.
  */
-public class Matrix {
+public class Matrix{
     float[][] matrix = new float[4][4];
+
+    @Override
+    public boolean equals(Object o) {
+        if(o.getClass().equals(Matrix.class)) {
+            return Arrays.deepEquals(((Matrix)o).getAsArray(),this.getAsArray());
+        }else{
+            return false;
+        }
+    }
 
     public static Matrix getPerspectiveMatrix(float fovy, float aspect, float near, float far) {
         float f = (float) Math.atan(fovy / 2);
