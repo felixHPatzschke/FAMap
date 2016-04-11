@@ -177,7 +177,6 @@ public class Lwjgl extends Thread {
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
             shader.bind();
 
             if (mapIs != null) {
@@ -200,12 +199,10 @@ public class Lwjgl extends Thread {
 
             camera.applyMatrix(shader);
 
-            for (Renderable r : renderablesList) {
-                if (r.isRenderable()) {
-                    r.applyMatrix(shader);
-                    r.render(camera);
-                }
-            }
+            renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
+                r.applyMatrix(shader);
+                r.render(camera);
+            });
 
             if (map != null) {
                 if (map.isLoaded()) {

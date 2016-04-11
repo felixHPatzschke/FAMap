@@ -94,7 +94,7 @@ public abstract class Logger {
         }
     }
 
-    public static void logOutI(boolean lineInfo, Object... msg)
+    public static void logOutI(Object... msg)
     {
         if( console_output || file_output )
         {
@@ -112,7 +112,7 @@ public abstract class Logger {
         }
     }
 
-    public static void logErrI(boolean lineInfo, Object... msg)
+    public static void logErrI(Object... msg)
     {
         if( console_output || file_output )
         {

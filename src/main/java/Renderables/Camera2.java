@@ -265,7 +265,8 @@ public class Camera2 {
 
     protected FloatBuffer getMatrix()
     {
-        return this.matrix;
+        matrix.flip();
+        return matrix;
     }
 
     /**

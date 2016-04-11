@@ -65,8 +65,8 @@ public class Shader {
 
         GL20.glUseProgram(shaderProgram);
 
-        objectMatrix =GL20.glGetUniformLocation(shaderProgram,"objectMatrix");
-        cameraMatrix =GL20.glGetUniformLocation(shaderProgram,"cameraMatrix");
+        objectMatrix = GL20.glGetUniformLocation(shaderProgram,"objectMatrix");
+        cameraMatrix = GL20.glGetUniformLocation(shaderProgram,"cameraMatrix");
 
         GL20.glUseProgram(0);
     }

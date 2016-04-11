@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/mapeditor.iml" filepath="$PROJECT_DIR$/mapeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mapeditor.iml" filepath="$PROJECT_DIR$/.idea/modules/mapeditor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mapeditor_main.iml" filepath="$PROJECT_DIR$/.idea/modules/mapeditor_main.iml" group="mapeditor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mapeditor_test.iml" filepath="$PROJECT_DIR$/.idea/modules/mapeditor_test.iml" group="mapeditor" />
     </modules>
   </component>
 </project>
