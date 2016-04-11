@@ -38,9 +38,8 @@ public class Shader {
         fragShader = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
         GL20.glShaderSource(fragShader, fileToString("/"+name+".frag"));
         GL20.glCompileShader(fragShader);
-        // =================== OpenGL.Shader Setup =====================
 
-        // =================== OpenGL.Shader Check =====================
+
         int status = GL20.glGetShaderi(vertShader, GL20.GL_COMPILE_STATUS);
         if (status != GL11.GL_TRUE) {
             throw new RuntimeException(GL20.glGetShaderInfoLog(vertShader));
@@ -50,9 +49,8 @@ public class Shader {
         if (statusN != GL11.GL_TRUE) {
             throw new RuntimeException(GL20.glGetShaderInfoLog(fragShader));
         }
-        // =================== OpenGL.Shader Check =====================
 
-        // =================== OpenGL.Shader Program ===================
+
         shaderProgram = GL20.glCreateProgram();
 
         GL20.glAttachShader(shaderProgram, vertShader);
