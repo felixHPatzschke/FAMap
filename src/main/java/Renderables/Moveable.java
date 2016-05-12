@@ -21,9 +21,9 @@ public abstract class Moveable {
             matrix = new Matrix4f();
 
             matrix.translate(translX,translY,translZ);
-            matrix.rotate(eyeX,1,0,0);
-            matrix.rotate(eyeY,0,1,0);
-            matrix.rotate(eyeZ,0,0,1);
+            //matrix.rotate(eyeX,1,0,0);
+            //matrix.rotate(eyeY,0,1,0);
+            //matrix.rotate(eyeZ,0,0,1);
 
             logOut("O:",matrix.toString());
             refresh=false;

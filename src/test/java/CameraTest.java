@@ -12,7 +12,6 @@ public class CameraTest {
         m.rotateZ(30);
         m.rotateY(10);
         m.rotateX(-20);
-
         System.out.println(m.toString());
 
         m = new Matrix4f();
