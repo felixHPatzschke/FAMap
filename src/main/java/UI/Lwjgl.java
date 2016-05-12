@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 
-import static UI.Logger.logErr;
 import static UI.Logger.logOut;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -90,19 +89,21 @@ public class Lwjgl extends Thread {
         glfwShowWindow(window);
     }
 
-    private void loop() {
+    public static void checkError() throws Exception {
+        int error=glGetError();
+        if(error!=GL_NO_ERROR){
+            throw new Exception(String.valueOf(error));
+        }
+    }
+
+    private void loop() throws Exception {
         GL.createCapabilities();
-
         renderablesList.add(0, renderableMap);
-
         shader = new Shader("simple");
-
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glEnable(GL_DEPTH_TEST);
-
         shader.bind();
-
         renderablesList.add(new CoordSystem());
 
         glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback() {
@@ -120,7 +121,6 @@ public class Lwjgl extends Thread {
                 }
             }
         });
-
         glfwSetWindowPosCallback(window, windowPosCallback = new GLFWWindowPosCallback() {
             @Override
             public void invoke(long window, int xpos, int ypos) {
@@ -128,7 +128,6 @@ public class Lwjgl extends Thread {
                 Settings.glfw_window_posy = ypos;
             }
         });
-
         glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback() {
 
             @Override
@@ -146,9 +145,7 @@ public class Lwjgl extends Thread {
                 camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
             }
         });
-
         shader.unbind();
-
 
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
@@ -166,16 +163,15 @@ public class Lwjgl extends Thread {
                 }
             }
         });
-
         glfwSetWindowFocusCallback(window, windowFocusCallback = new GLFWWindowFocusCallback() {
             @Override
             public void invoke(long window, int foc) {
                 focused = foc == 1;
             }
         });
-
+        checkError();
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
-
+            checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             shader.bind();
 
@@ -244,7 +240,7 @@ public class Lwjgl extends Thread {
                 if (mouseLocked) {
                     if (dX != 0 || dY != 0) {
                         glfwSetCursorPos(window, width / 2, height / 2);
-                        camera.addRotation(((float) dY) / 10, 0, ((float) dX) / 10);
+                        camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
                     }
                 } else {
                     //TODO Add ray casting and tool code here
@@ -316,12 +312,13 @@ public class Lwjgl extends Thread {
             // Release window and window callbacks
             logOut("Terminating");
         } catch(Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException(ex);
         } finally {
             logOut("Cleaning up");
             cleanup();
+            MainUIController.exit(0);
         }
-        MainUIController.exit(0);
     }
 
     public void stopThread(){

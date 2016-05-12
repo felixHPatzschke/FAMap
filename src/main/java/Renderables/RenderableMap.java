@@ -17,7 +17,7 @@ public class RenderableMap extends Renderable {
     private int iboId=-1;
 
     public RenderableMap(){
-        eyeX=-90;
+        //eyeX=-90;
     }
 
     public void setMapRenderer(MapRenderer mapRenderer){
@@ -47,7 +47,7 @@ public class RenderableMap extends Renderable {
         int centralTileY = (int)(getTranslationY()/Tile.SIZE);
         for (int x = 0;x<map.getMapDetails().getWidth()/Tile.SIZE;x++){
             for (int y = 0;y<map.getMapDetails().getHeight()/Tile.SIZE;y++){
-                if(Math.pow(centralTileX-x,2)<=visionRadius&&Math.pow(centralTileY-y,2)<=visionRadius){
+                //if(Math.pow(centralTileX-x,2)<=visionRadius&&Math.pow(centralTileY-y,2)<=visionRadius){
                     if (tiles[x][y] == null) {
                         tiles[x][y] = new Tile(map, mapRenderer, x, y);
                     }
@@ -64,7 +64,7 @@ public class RenderableMap extends Renderable {
                     GL20.glDisableVertexAttribArray(1);
 
                     GL30.glBindVertexArray(0);
-                }
+                //}
             }
         }
     }

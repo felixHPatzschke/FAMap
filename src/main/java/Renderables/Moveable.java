@@ -1,10 +1,11 @@
 package Renderables;
 
-import OpenGL.Matrix;
 import OpenGL.Shader;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import java.util.Arrays;
+import static UI.Logger.logOut;
 
 /**
  * Created by Basti on 31.01.2016.
@@ -13,21 +14,25 @@ public abstract class Moveable {
 
     float eyeX = 0, eyeY = 0, eyeZ = 0, translX = 0, translY = 0, translZ = 0, scaleX = 1, scaleY = 1, scaleZ = 1;
     boolean refresh=true;
-    Matrix result = new Matrix();
+    Matrix4f matrix = new Matrix4f();
 
-    protected Matrix getMatrix() {
+    protected Matrix4f getMatrix() {
         if(refresh) {
-            result = new Matrix();
-            result = Matrix.scale(result, scaleX, scaleY, scaleZ);
-            result = Matrix.rotate(result,eyeX,eyeY,eyeZ);
-            result = Matrix.translate(result,translX,translY,translZ);
+            matrix = new Matrix4f();
+
+            matrix.translate(translX,translY,translZ);
+            matrix.rotate(eyeX,1,0,0);
+            matrix.rotate(eyeY,0,1,0);
+            matrix.rotate(eyeZ,0,0,1);
+
+            logOut("O:",matrix.toString());
             refresh=false;
         }
-        return result;
+        return matrix;
     }
 
     public void applyMatrix(Shader s){
-        GL20.glUniformMatrix4fv(s.getObjectMatrixLocation(),false,getMatrix().getAsBuffer());
+        GL20.glUniformMatrix4fv(s.getObjectMatrixLocation(),false,getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
 
     //<editor-fold desc="Translation">
@@ -74,32 +79,32 @@ public abstract class Moveable {
     //</editor-fold>
 
     //<editor-fold desc="Rotation">
-    public void setRotation(float x, float y, float z) {
-        eyeX = x;
-        eyeY = y;
-        eyeZ = z;
+    public void setRotationDeg(float x, float y, float z) {
+        eyeX = (float) Math.toRadians(x);
+        eyeY = (float) Math.toRadians(y);
+        eyeZ = (float) Math.toRadians(z);
         refresh=true;
     }
 
-    public void addRotation(float x, float y, float z) {
-        eyeX += x;
-        eyeY += y;
-        eyeZ += z;
+    public void addRotationDeg(float x, float y, float z) {
+        eyeX += Math.toRadians(x);
+        eyeY += Math.toRadians(y);
+        eyeZ += Math.toRadians(z);
         refresh=true;
     }
 
-    public void setEyeX(float eyeX) {
-        this.eyeX = eyeX;
+    public void setEyeXDeg(float eyeX) {
+        this.eyeX = (float) Math.toRadians(eyeX);
         refresh=true;
     }
 
-    public void setEyeY(float eyeY) {
-        this.eyeY = eyeY;
+    public void setEyeYDeg(float eyeY) {
+        this.eyeY = (float) Math.toRadians(eyeY);
         refresh=true;
     }
 
-    public void setEyeZ(float eyeZ) {
-        this.eyeZ = eyeZ;
+    public void setEyeZDeg(float eyeZ) {
+        this.eyeZ = (float) Math.toRadians(eyeZ);
         refresh=true;
     }
 

@@ -14,4 +14,5 @@ dependencies {
     testCompile 'org.lwjgl:lwjgl:3.0.0b'
     compile 'org.lwjgl:lwjgl:3.0.0b'
     compile 'org.json:json:20160212'
+    compile 'org.joml:joml:1.7.1'
 }

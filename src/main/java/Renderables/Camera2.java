@@ -1,11 +1,9 @@
 package Renderables;
 
-import OpenGL.Matrix;
 import OpenGL.Shader;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;

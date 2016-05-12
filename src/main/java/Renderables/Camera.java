@@ -1,11 +1,10 @@
 package Renderables;
 
-import OpenGL.Matrix;
 import OpenGL.Shader;
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-
-import java.util.Arrays;
 
 import static UI.Logger.logOut;
 
@@ -18,25 +17,29 @@ public class Camera extends Moveable {
 
     @Override
     public void applyMatrix(Shader s){
-        GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(),false,getMatrix().getAsBuffer());
+        GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(),false,getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
 
     public void setViewport(int width,int height){
-        GL11.glViewport(0, 0, width, height);
+        GL11.glViewport(0,0,width, height);
         this.width=width;
         this.height=height;
     }
 
-    protected Matrix getMatrix() {
+    @Override
+    protected Matrix4f getMatrix() {
         if(refresh) {
-            result = Matrix.getPerspectiveMatrix(60,width/height,0.01f,5000);
-            Matrix model = Matrix.scale(new Matrix(), scaleX, scaleY, scaleZ);
-            model = Matrix.rotate(model, eyeX, eyeY, eyeZ);
-            model = Matrix.translate(model,-translX,-translY,-translZ);
-            result=result.multiply(model);
-            logOut(Arrays.deepToString(result.getAsArray()));
+            matrix = new Matrix4f();
+
+            matrix.rotate(-eyeZ,0,0,1);
+            matrix.rotate(-eyeY,0,1,0);
+            matrix.rotate(-eyeX,1,0,0);
+            matrix.translate(-translX,-translY,-translZ);
+            matrix.perspective(60,width/height,0.1f,5000f);
+
+            logOut("C:",matrix.toString());
             refresh=false;
         }
-        return result;
+        return matrix;
     }
 }

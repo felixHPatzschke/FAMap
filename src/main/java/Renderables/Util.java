@@ -46,7 +46,7 @@ public abstract class Util {
      *
      * @param a first operand
      * @param b second operand
-     * @param res result
+     * @param res matrix
      */
     public static final void crossf(float[] a, float[] b, float[] res)
     {

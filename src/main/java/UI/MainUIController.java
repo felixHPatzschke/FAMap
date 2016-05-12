@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static UI.Logger.logOut;
+
 /**
  * Created by Basti on 03.01.2016.
  */
