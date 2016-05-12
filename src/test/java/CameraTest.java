@@ -1,3 +1,4 @@
+import UI.Logger;
 import org.joml.Matrix4f;
 import org.junit.Test;
 
@@ -8,6 +9,7 @@ public class CameraTest {
     @Test
     public void testCamera(){
         Matrix4f m = new Matrix4f();
+        System.out.println(m.toString());
         m.translate(0,0,-10);
         m.rotateZ(30);
         m.rotateY(10);

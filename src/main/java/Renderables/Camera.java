@@ -31,11 +31,12 @@ public class Camera extends Moveable {
         if(refresh) {
             matrix = new Matrix4f();
 
+            matrix.perspective(60,width/height,0.1f,5000f);
+
             matrix.rotate(-eyeZ,0,0,1);
             matrix.rotate(-eyeY,0,1,0);
             matrix.rotate(-eyeX,1,0,0);
             matrix.translate(-translX,-translY,-translZ);
-            matrix.perspective(60,width/height,0.1f,5000f);
 
             logOut("C:",matrix.toString());
             refresh=false;

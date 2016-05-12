@@ -1,8 +1,10 @@
 package Renderables;
 
 import OpenGL.Shader;
+import UI.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+import org.joml.*;
 
 import java.nio.FloatBuffer;
 
@@ -44,7 +46,9 @@ public class Camera2 {
     /**
      * lookat matrix
      */
-    private FloatBuffer matrix;
+    private Matrix4f v_matrix, p_matrix, matrix;
+
+    boolean p_change, v_change;
 
 
     public Camera2(float eyex, float eyey, float eyez, float centerx, float centery, float centerz, float upx, float upy, float upz, float fov, int width, int height)
@@ -100,24 +104,34 @@ public class Camera2 {
         Util.normalizef(right);
 
         Util.crossf(right, forward, up);
-
+        v_change = true;
     }
 
     public final void setFoV(float fov)
     {
+        Logger.logOutI("P changed");
         this.fov = fov;
+        p_change = true;
+    }
+
+    public final float getFoV()
+    {
+        Logger.logOutI("P changed");
+        return this.fov;
     }
 
     public final void setViewport(int width, int height)
     {
+        Logger.logOutI("P changed");
         aspectRatio = (float)width/(float)height;
+        p_change = true;
     }
 
     public void translate(float x, float y, float z)
     {
         eye[0] += x;
-        eye[1] += x;
-        eye[2] += x;
+        eye[1] += y;
+        eye[2] += z;
     }
 
     /**
@@ -126,9 +140,11 @@ public class Camera2 {
      */
     public void translateForward(float factor)
     {
+        Logger.logOutI("V changed");
         eye[0] += factor*forward[0];
         eye[1] += factor*forward[1];
         eye[2] += factor*forward[2];
+        v_change = true;
     }
 
     /**
@@ -137,9 +153,11 @@ public class Camera2 {
      */
     public void translateUp(float factor)
     {
+        Logger.logOutI("V changed");
         eye[0] += factor*up[0];
         eye[1] += factor*up[1];
         eye[2] += factor*up[2];
+        v_change = true;
     }
 
     /**
@@ -148,9 +166,11 @@ public class Camera2 {
      */
     public void translateRight(float factor)
     {
+        Logger.logOutI("V changed");
         eye[0] += factor*right[0];
         eye[1] += factor*right[1];
         eye[2] += factor*right[2];
+        v_change = true;
     }
 
 
@@ -188,8 +208,10 @@ public class Camera2 {
      */
     public void rotateLeftRight(float angle)
     {
+        Logger.logOutI("V changed");
         Util.rotate(forward, up, angle);
         Util.rotate(right, up, angle);
+        v_change = true;
     }
 
     /**
@@ -198,8 +220,10 @@ public class Camera2 {
      */
     public void rotateUpDown(float angle)
     {
+        Logger.logOutI("V changed");
         Util.rotate(forward, right, angle);
         Util.rotate(up, right, angle);
+        v_change = true;
     }
 
     /**
@@ -210,90 +234,50 @@ public class Camera2 {
     {
         Util.rotate(up, forward, angle);
         Util.rotate(right, forward, angle);
+        v_change = true;
     }
 
-    /**
-     * prepares part of the gluLookAt-Matrix
-     */
-    public void makeGLUMatrix()
+    protected void makePerspectiveMatrix()
     {
-        matrix.put(0, right[0]);
-        matrix.put(4, right[1]);
-        matrix.put(8, right[2]);
-
-        matrix.put(1, up[0]);
-        matrix.put(5, up[1]);
-        matrix.put(9, up[2]);
-
-        matrix.put(2, -forward[0]);
-        matrix.put(6, -forward[1]);
-        matrix.put(10, -forward[2]);
+        p_matrix = new Matrix4f();
+        //p_matrix.perspective(fov, aspectRatio, 0.1f, 5000.0f);
+        Logger.logOut("Perspective Matrix:", p_matrix);
+        p_change = false;
     }
 
-    protected void makePerspectiveMatrix(float fovy, float aspectRatio, float zNear, float zFar)
+    protected void makeViewMatrix()
     {
-        float f = (float) Math.atan(fovy/2);
-        matrix.put(0, f/aspectRatio);
-        matrix.put(5, f);
-        matrix.put(10, (zFar-zNear)/(zNear-zFar));
-        matrix.put(11, (2*zFar*zNear)/(zNear-zFar));
-        matrix.put(14, -1.0f);
-    }
-
-    protected void makeTranslationMatrix(float[] v)
-    {
-        matrix.put(3, matrix.get(3)+v[0]);
-        matrix.put(7, matrix.get(7)+v[1]);
-        matrix.put(10, matrix.get(10)+v[2]);
-    }
-
-    protected void makeRotationMatrix(float x, float y, float z)
-    {
-
+        v_matrix = new Matrix4f();
+        v_matrix.lookAt(eye[0], eye[1], eye[2], eye[0]+forward[0], eye[1]+forward[1], eye[2]+forward[2], up[0], up[1], up[2]);
+        Logger.logOut("View Matrix:", v_matrix);
+        v_change = false;
     }
 
     protected void makeMatrix()
     {
-        makeIdentityMatrix();
-        makePerspectiveMatrix(fov, aspectRatio, 0.01f, 5000.0f);
-        makeGLUMatrix();
-        makeTranslationMatrix(eye);
-
+        if(p_change || v_change)
+        {
+            matrix = new Matrix4f();
+            if(p_change)
+                makePerspectiveMatrix();
+            if(v_change)
+                makeViewMatrix();
+            //matrix = p_matrix.mul(v_matrix);
+            matrix = v_matrix.mul(p_matrix);  // or the other way around, i'm not sure...
+            Logger.logOut("Camera Matrix: ", matrix);
+        }
     }
 
-    protected FloatBuffer getMatrix()
+    public Matrix4f getMatrix()
     {
-        matrix.flip();
+        makeMatrix();
         return matrix;
-    }
-
-    /**
-     * resets the gluLookAt-Matrix to the identity matrix
-     */
-    protected final void makeIdentityMatrix()
-    {
-        matrix = BufferUtils.createFloatBuffer(16);
-        int oldpos = matrix.position();
-        matrix.put(Util.IDENTITY_MATRIX);
-        matrix.position(oldpos);
-    }
-
-    ///**
-    // * call Camera2::makeGLUMatrix() before!!!
-    // * or at least, whenever something changes
-    // */
-    public void gluLookAt()
-    {
-        makeIdentityMatrix();
-        makeGLUMatrix();
-        glMultMatrixf(matrix);
-        glTranslatef(-eye[0], -eye[1], -eye[2]);
     }
 
     public void applyMatrix(Shader s)
     {
         makeMatrix();
-        GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(),false,getMatrix());
+        GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(), false, getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
 
 }

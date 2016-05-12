@@ -6,6 +6,7 @@ import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import OpenGL.Shader;
 import Renderables.Camera;
+import Renderables.Camera2;
 import Renderables.CoordSystem;
 import Renderables.Renderable;
 import Renderables.RenderableMap;
@@ -18,6 +19,7 @@ import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 
 import static UI.Logger.logOut;
+import static UI.Logger.logErr;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -41,7 +43,8 @@ public class Lwjgl extends Thread {
     private Shader shader;
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
-    private Camera camera = new Camera();
+    //private Camera camera = new Camera();
+    private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
     private RenderableMap renderableMap = new RenderableMap();
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
@@ -51,7 +54,12 @@ public class Lwjgl extends Thread {
     private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+        try{
+            glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+        } catch (Throwable x) {
+            logErr("Failed to set GLFW error callback: ", x.getLocalizedMessage());
+
+        }
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
         if (glfwInit() != GLFW_TRUE)
@@ -142,7 +150,8 @@ public class Lwjgl extends Thread {
                 if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
                     speed = speed / (1 / map.getMapDetails().getHeightmapScale());
                 }
-                camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
+                //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
+                camera.setFoV(camera.getFoV() + (float)(yoffset*speed));
             }
         });
         shader.unbind();
@@ -197,7 +206,7 @@ public class Lwjgl extends Thread {
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 r.applyMatrix(shader);
-                r.render(camera);
+                r.render(null); // TODO
             });
 
             if (map != null) {
@@ -240,7 +249,9 @@ public class Lwjgl extends Thread {
                 if (mouseLocked) {
                     if (dX != 0 || dY != 0) {
                         glfwSetCursorPos(window, width / 2, height / 2);
-                        camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
+                        //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
+                        camera.rotateLeftRight((float)dX*0.1f);
+                        camera.rotateUpDown((float)dY*0.1f);
                     }
                 } else {
                     //TODO Add ray casting and tool code here
@@ -274,15 +285,19 @@ public class Lwjgl extends Thread {
             transl.x += speed;
         }
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
-            camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
+            //camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
+            camera.translateForward(speed*10.0f);
         }
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
-            camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
+            //camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
+            camera.translateForward(speed*-10.0f);
         }
         if (transl.x != 0 || transl.y != 0) {
             input = true;
             //transl.rotate(-camera.getEyeZ());
-            camera.addTranslation((float) transl.x, (float) transl.y, 0);
+            //camera.addTranslation((float) transl.x, (float) transl.y, 0);
+            camera.translateRight((float)transl.x);
+            camera.translateUp((float)transl.y);
         }
     }
 
@@ -312,11 +327,17 @@ public class Lwjgl extends Thread {
             // Release window and window callbacks
             logOut("Terminating");
         } catch(Exception ex) {
+            logErr(ex);
             ex.printStackTrace();
             throw new RuntimeException(ex);
         } finally {
             logOut("Cleaning up");
-            cleanup();
+            try {
+                cleanup();
+            } catch(NullPointerException nex) {
+                logErr(nex);
+                nex.printStackTrace();
+            }
             MainUIController.exit(0);
         }
     }
