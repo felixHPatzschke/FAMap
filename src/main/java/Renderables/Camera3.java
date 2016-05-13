@@ -2,11 +2,13 @@ package Renderables;
 
 
 import OpenGL.Shader;
+import org.joml.Matrix3d;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+import static UI.Logger.*;
 
 /**
  * Created by Felix Patzschke on 12.05.2016.
@@ -14,11 +16,11 @@ import org.lwjgl.opengl.GL20;
 public class Camera3 {
 
     /** Position Vector */
-    Vector3f pos;
+    Vector3d pos;
     /** Camera space y-Axis */
-    Vector3f up;
+    Vector3d up;
     /** Camera space z-Axis */
-    Vector3f fwd;
+    Vector3d fwd;
     /** Field of view in y-direction */
     float fov;
     /** Framebuffer aspect ratio */
@@ -29,9 +31,9 @@ public class Camera3 {
 
     public Camera3()
     {
-        pos = new Vector3f(0, 0, 1);
-        up = new Vector3f(0, 1, 0);
-        fwd = new Vector3f(0, 0, -1);
+        pos = new Vector3d(0, 0, 2);
+        up = new Vector3d(0, 1, 0);
+        fwd = new Vector3d(0, 0, -1);
         fov = 45;
         aspect = 1;
         matrix = new Matrix4f();
@@ -50,6 +52,7 @@ public class Camera3 {
             if(v_changed)
                 makeViewMatrix();
             matrix = p_matrix.mul(v_matrix);
+            logOut("Camera Matrix:", matrix);
         }
         return matrix;
     }
@@ -63,9 +66,14 @@ public class Camera3 {
 
     protected void makeViewMatrix()
     {
-        v_matrix = new Matrix4f();
-        v_matrix.translate(pos.negate());
-        v_matrix.lookAlong(fwd, up);
+        v_matrix = new Matrix4f(
+                1.0f, 0.0f, 0.0f, (float)(-pos.x),
+                0.0f, 1.0f, 0.0f, (float)(-pos.y),
+                0.0f, 0.0f, 1.0f, (float)(-pos.z),
+                0.0f, 0.0f, 0.0f, 1.0f
+                );
+        //v_matrix.translate((float)(-pos.x), (float)(-pos.x), (float)(-pos.x));
+        v_matrix.lookAlong((float)fwd.x, (float)fwd.y, (float)fwd.z, (float)up.x, (float)up.y, (float)up.z);
         v_changed = false;
     }
 
@@ -75,10 +83,10 @@ public class Camera3 {
     }
     // </editor-fold>
     // <editor-fold desc="Rotation">
-    public void pitch(float angle)
+    public void pitch(double angle)
     {
-        Matrix3f mat = new Matrix3f();
-        Vector3f right = new Vector3f();
+        Matrix3d mat = new Matrix3d();
+        Vector3d right = new Vector3d();
         fwd.cross(up, right);
         mat.rotation(angle, right);
         fwd = fwd.mul(mat);
@@ -86,54 +94,62 @@ public class Camera3 {
         v_changed = true;
     }
 
-    public void yaw(float angle)
+    public void yaw(double angle)
     {
-        Matrix3f mat = new Matrix3f();
+        Matrix3d mat = new Matrix3d();
         mat.rotation(angle, up);
         fwd = fwd.mul(mat);
         v_changed = true;
     }
 
-    public void roll(float angle)
+    public void roll(double angle)
     {
-        Matrix3f mat = new Matrix3f();
+        Matrix3d mat = new Matrix3d();
         mat.rotation(angle, fwd);
         up = up.mul(mat);
         v_changed = true;
     }
 
-    public void rotateCenter(float x, float y)
+    public void rotateCenter(double x, double y)
     {
-        Vector3f right = new Vector3f();
+        Vector3d right = new Vector3d();
         fwd.cross(up, right);
-        Matrix3f xrot = new Matrix3f();
-        xrot.rotation(x, up);
-        Matrix3f yrot = new Matrix3f();
+        Matrix3d xrot = new Matrix3d(
+                Math.cos(x), 0.0f, Math.sin(x),
+                0.0f, 1.0f, 0.0f,
+                -1.0*Math.sin(x), 0.0f, Math.cos(x));
+        //xrot.rotation(x, up);
+        logOut("xRot Matrix: ", xrot);
+        Matrix3d yrot = new Matrix3d();
         yrot.rotation(y, right);
-        pos = pos.mul(xrot);
+        logOut("old pos:", pos);
+        pos.mul(xrot);
+        logOut("new pos:", pos);
         pos = pos.mul(yrot);
-        fwd = fwd.mul(xrot);
+        logOut("old fwd:", fwd);
+        fwd.mul(xrot);
+        logOut("new fwd:", fwd);
         fwd = fwd.mul(yrot);
         up = up.mul(yrot);
         v_changed = true;
     }
     // </editor-fold>
     // <editor-fold desc="Translation">
-    public void translateForward(float q)
+    public void translateForward(double q)
     {
         pos.add(fwd.x*q, fwd.y*q, fwd.z*q);
         v_changed = true;
     }
 
-    public void translateRight(float q)
+    public void translateRight(double q)
     {
-        Vector3f right = new Vector3f();
+        Vector3d right = new Vector3d();
         fwd.cross(up, right);
         pos.add(right.x*q, right.y*q, right.z*q);
         v_changed = true;
     }
 
-    public void translateUp(float q)
+    public void translateUp(double q)
     {
         pos.add(up.x*q, up.y*q, up.z*q);
         v_changed = true;

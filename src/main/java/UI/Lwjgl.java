@@ -7,9 +7,11 @@ import MapRenderers.MapRenderer;
 import OpenGL.Shader;
 import Renderables.Camera;
 import Renderables.Camera2;
+import Renderables.Camera3;
 import Renderables.CoordSystem;
 import Renderables.Renderable;
 import Renderables.RenderableMap;
+import org.joml.Vector2d;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -44,12 +46,15 @@ public class Lwjgl extends Thread {
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
     //private Camera camera = new Camera();
-    private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
+    //private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
+    private Camera3 camera = new Camera3();
     private RenderableMap renderableMap = new RenderableMap();
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
     private int height, width;
     private boolean resized, input = true, mouseLocked = false, focused = true;
+    Vector2d oldMouse = new Vector2d(0.0, 0.0);
+
 
     private void init() {
         // Setup an error callback. The default implementation
@@ -109,7 +114,8 @@ public class Lwjgl extends Thread {
         renderablesList.add(0, renderableMap);
         shader = new Shader("simple");
         // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glLineWidth(3.0f);
         glEnable(GL_DEPTH_TEST);
         shader.bind();
         renderablesList.add(new CoordSystem());
@@ -151,7 +157,8 @@ public class Lwjgl extends Thread {
                     speed = speed / (1 / map.getMapDetails().getHeightmapScale());
                 }
                 //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
-                camera.setFoV(camera.getFoV() + (float)(yoffset*speed));
+                //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
+
             }
         });
         shader.unbind();
@@ -159,11 +166,13 @@ public class Lwjgl extends Thread {
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
+                logOut("Key Action: " + key + " scancode " + scancode);
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                     glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
                     //camera.init(shader);
                     mouseLocked = !mouseLocked;
+                    logOut("Mouse Locked: " + ((mouseLocked)?("true"):("false")));
                     if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
                     } else {
@@ -236,23 +245,24 @@ public class Lwjgl extends Thread {
             x.rewind();
             y.rewind();
 
-            int dX = width / 2 - (int) x.get();
-            int dY = height / 2 - (int) y.get();
+            double dX = x.get() - oldMouse.x;
+            double dY = y.get() - oldMouse.y;
 
-            if (dX != oldX || dY != oldY) {
+            if (((int)dX) != 0 || ((int)dY) != 0) {
 
-                oldX = dX;
-                oldY = dY;
+                //logOut("Old Mouse Position: " + oldMouse.toString());
+                oldMouse.x += dX;
+                oldMouse.y += dY;
+                logOut("Mouse Position: " + oldMouse.toString(), "Mouse Movement: " + dX + " | " + dY);
 
                 input = true;
 
                 if (mouseLocked) {
-                    if (dX != 0 || dY != 0) {
-                        glfwSetCursorPos(window, width / 2, height / 2);
+                    //if (((int)dX) != 0 || ((int)dY) != 0) {
+                        //glfwSetCursorPos(window, width / 2, height / 2);
                         //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
-                        camera.rotateLeftRight((float)dX*0.1f);
-                        camera.rotateUpDown((float)dY*0.1f);
-                    }
+                        camera.rotateCenter(dX*0.001, dY*0.001);
+                    //}
                 } else {
                     //TODO Add ray casting and tool code here
                 }
