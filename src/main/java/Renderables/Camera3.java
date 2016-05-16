@@ -120,8 +120,8 @@ public class Camera3 {
                 -1.0*Math.sin(x), 0.0f, Math.cos(x));
         //xrot.rotation(x, up);
         logOut("xRot Matrix: ", xrot);
-        Matrix3d yrot = new Matrix3d();
-        yrot.rotation(y, right);
+        Matrix3d yrot = Util.rotationMatrix(right, y);
+        //yrot.rotation(y, right);
         logOut("old pos:", pos);
         pos.mul(xrot);
         logOut("new pos:", pos);

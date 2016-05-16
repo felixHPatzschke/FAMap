@@ -1,5 +1,10 @@
 package Renderables;
 
+
+import org.joml.Matrix3d;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
+
 /**
  * Created by felix on 23.02.2016.
  *
@@ -39,6 +44,18 @@ public abstract class Util {
         v[2] *= r;
 
         return v;
+    }
+
+    public static final Matrix3d rotationMatrix(Vector3d v, double angle)
+    {
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
+
+        return new Matrix3d(
+                v.x*v.x*(1-cos)+cos, v.x*v.y*(1-cos)-v.z*sin, v.x*v.z*(1-cos)-v.y*sin,
+                v.y*v.x*(1-cos)-v.z*sin, v.y*v.y*(1-cos)+cos, v.y*v.z*(1-cos)-v.x*sin,
+                v.z*v.x*(1-cos)-v.y*sin, v.z*v.y*(1-cos)-v.x*sin, v.z*v.z*(1-cos)+cos
+                );
     }
 
     /**
