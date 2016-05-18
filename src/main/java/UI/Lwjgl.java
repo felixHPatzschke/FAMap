@@ -63,7 +63,6 @@ public class Lwjgl extends Thread {
             glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         } catch (Throwable x) {
             logErr("Failed to set GLFW error callback: ", x.getLocalizedMessage());
-
         }
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -174,7 +173,7 @@ public class Lwjgl extends Thread {
                     mouseLocked = !mouseLocked;
                     logOut("Mouse Locked: " + ((mouseLocked)?("true"):("false")));
                     if (mouseLocked) {
-                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                     } else {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                     }
