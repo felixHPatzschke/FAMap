@@ -253,11 +253,11 @@ public class Lwjgl extends Thread {
                 //logOut("Old Mouse Position: " + oldMouse.toString());
                 oldMouse.x += dX;
                 oldMouse.y += dY;
-                logOut("Mouse Position: " + oldMouse.toString(), "Mouse Movement: " + dX + " | " + dY);
 
                 input = true;
 
                 if (mouseLocked) {
+                    logOut("Mouse Position: " + oldMouse.toString(), "Mouse Movement: " + dX + " | " + dY);
                     //if (((int)dX) != 0 || ((int)dY) != 0) {
                         //glfwSetCursorPos(window, width / 2, height / 2);
                         //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);

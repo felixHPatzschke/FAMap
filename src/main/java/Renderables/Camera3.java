@@ -51,7 +51,7 @@ public class Camera3 {
                 makeProjectionMatrix();
             if(v_changed)
                 makeViewMatrix();
-            matrix = p_matrix.mul(v_matrix);
+            p_matrix.mul(v_matrix, matrix);
             logOut("Camera Matrix:", matrix);
         }
         return matrix;
@@ -71,7 +71,7 @@ public class Camera3 {
                 0.0f, 1.0f, 0.0f, (float)(-pos.y),
                 0.0f, 0.0f, 1.0f, (float)(-pos.z),
                 0.0f, 0.0f, 0.0f, 1.0f
-                );
+        );
         //v_matrix.translate((float)(-pos.x), (float)(-pos.x), (float)(-pos.x));
         v_matrix.lookAlong((float)fwd.x, (float)fwd.y, (float)fwd.z, (float)up.x, (float)up.y, (float)up.z);
         v_changed = false;
