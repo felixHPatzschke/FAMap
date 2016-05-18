@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL20.glBindAttribLocation;
  * Created by bhofmann on 23.09.2015.
  */
 public class Shader {
-    private int vertShader, fragShader, shaderProgram, objectMatrix, cameraMatrix;
+    private int vertShader, fragShader, shaderProgram, objectMatrix, cameraMatrix, transparency;
 
     public void bind(){
         GL20.glUseProgram(shaderProgram);
@@ -28,6 +28,10 @@ public class Shader {
 
     public int getCameraMatrixLocation() {
         return cameraMatrix;
+    }
+
+    public int getTransparencyLocation(){
+        return transparency;
     }
 
     public Shader(String name){
@@ -65,6 +69,7 @@ public class Shader {
 
         objectMatrix = GL20.glGetUniformLocation(shaderProgram,"objectMatrix");
         cameraMatrix = GL20.glGetUniformLocation(shaderProgram,"cameraMatrix");
+        transparency = GL20.glGetUniformLocation(shaderProgram,"transparency");
 
         GL20.glUseProgram(0);
     }

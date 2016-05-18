@@ -5,12 +5,7 @@ import FAProps.Vector2;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import OpenGL.Shader;
-import Renderables.Camera;
-import Renderables.Camera2;
-import Renderables.Camera3;
-import Renderables.CoordSystem;
-import Renderables.Renderable;
-import Renderables.RenderableMap;
+import Renderables.*;
 import org.joml.Vector2d;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -116,8 +111,11 @@ public class Lwjgl extends Thread {
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glLineWidth(3.0f);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         shader.bind();
         renderablesList.add(new CoordSystem());
+        renderablesList.add(new PlainSystem());
 
         glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback() {
             @Override
@@ -214,6 +212,7 @@ public class Lwjgl extends Thread {
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 r.applyMatrix(shader);
+                GL20.glUniform1f(shader.getTransparencyLocation(),r.getTransparency());
                 r.render(null); // TODO
             });
 

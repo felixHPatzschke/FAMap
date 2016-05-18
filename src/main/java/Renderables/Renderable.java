@@ -11,4 +11,8 @@ public abstract class Renderable extends Moveable {
     public boolean isRenderable(){
         return true;
     }
+
+    public float getTransparency(){
+        return 1;
+    };
 }
