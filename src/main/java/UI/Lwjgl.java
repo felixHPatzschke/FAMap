@@ -158,7 +158,7 @@ public class Lwjgl extends Thread {
                 }
                 //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
                 //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
-
+                camera.zoom(yoffset*0.05);
             }
         });
         shader.unbind();
@@ -261,7 +261,7 @@ public class Lwjgl extends Thread {
                     //if (((int)dX) != 0 || ((int)dY) != 0) {
                         //glfwSetCursorPos(window, width / 2, height / 2);
                         //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
-                        camera.rotateCenter(dX*0.001, dY*0.001);
+                        camera.rotateCenter(dX*0.01, dY*0.01);
                     //}
                 } else {
                     //TODO Add ray casting and tool code here
