@@ -15,43 +15,52 @@ import static UI.Logger.*;
  */
 public class Camera3 {
 
-    /** Position Vector */
-    Vector3d pos;
+    /** Relative Position Vector */
+    private Vector3d pos;
+    /** Worldspace translation */
+    private Vector3d transl;
     /** Camera space y-Axis */
-    Vector3d up;
+    private Vector3d up;
     /** Camera space z-Axis */
-    Vector3d fwd;
+    private Vector3d fwd;
     /** Field of view in y-direction */
-    float fov;
+    private float fov;
     /** Framebuffer aspect ratio */
-    float aspect;
+    private float aspect;
 
-    Matrix4f p_matrix, v_matrix, matrix;
-    boolean p_changed, v_changed;
+    private Matrix4f p_matrix, v_matrix, t_matrix, matrix;
+    private boolean p_changed, v_changed, t_changed;
 
     public Camera3()
     {
-        pos = new Vector3d(0, 0, 2);
-        up = new Vector3d(0, 1, 0);
-        fwd = new Vector3d(0, 0, -1);
+        pos = new Vector3d(0, 2, 0);
+        transl = new Vector3d(0, 0, 0);
+        up = new Vector3d(0, 0, 1);
+        fwd = new Vector3d(0, -1, 0);
         fov = 45;
         aspect = 1;
         matrix = new Matrix4f();
 
         p_changed = true;
         v_changed = true;
+        t_changed = true;
     }
 
     // <editor-fold desc="Matrix">
     public Matrix4f getMatrix()
     {
-        if(p_changed || v_changed)
+        if(p_changed || v_changed || t_changed)
         {
             if(p_changed)
                 makeProjectionMatrix();
             if(v_changed)
                 makeViewMatrix();
-            p_matrix.mul(v_matrix, matrix);
+            if(t_changed)
+                makeTranslationMatrix();
+            matrix = new Matrix4f();
+            matrix.mul(p_matrix);
+            matrix.mul(t_matrix);
+            matrix.mul(v_matrix);
             logOut("Camera Matrix:", matrix);
         }
         return matrix;
@@ -77,12 +86,24 @@ public class Camera3 {
         v_changed = false;
     }
 
+    protected void makeTranslationMatrix()
+    {
+        t_matrix = new Matrix4f(
+                1.0f, 0.0f, 0.0f, (float)transl.x,
+                0.0f, 1.0f, 0.0f, (float)transl.y,
+                0.0f, 0.0f, 1.0f, (float)transl.z,
+                0.0f, 0.0f, 0.0f, 1.0f
+        );
+        t_changed = false;
+    }
+
     public void applyMatrix(Shader s)
     {
         GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(), false, getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
     // </editor-fold>
     // <editor-fold desc="Rotation">
+    @Deprecated
     public void pitch(double angle)
     {
         Matrix3d mat = new Matrix3d();
@@ -94,6 +115,7 @@ public class Camera3 {
         v_changed = true;
     }
 
+    @Deprecated
     public void yaw(double angle)
     {
         Matrix3d mat = new Matrix3d();
@@ -102,6 +124,7 @@ public class Camera3 {
         v_changed = true;
     }
 
+    @Deprecated
     public void roll(double angle)
     {
         Matrix3d mat = new Matrix3d();
@@ -114,45 +137,47 @@ public class Camera3 {
     {
         Vector3d right = new Vector3d();
         fwd.cross(up, right);
+        right.normalize();
         Matrix3d xrot = new Matrix3d(
-                Math.cos(x), 0.0f, Math.sin(x),
-                0.0f, 1.0f, 0.0f,
-                -1.0*Math.sin(x), 0.0f, Math.cos(x));
-        //xrot.rotation(x, up);
-        logOut("xRot Matrix: ", xrot);
-        Matrix3d yrot = Util.rotationMatrix(right, y);
-        //yrot.rotation(y, right);
-        logOut("old pos:", pos);
+                Math.cos(x), Math.sin(x), 0.0,
+                -1.0*Math.sin(x), Math.cos(x), 0.0,
+                0.0, 0.0, 1.0);
+        //logOut("xRot Matrix: ", xrot);
+        Matrix3d yrot = new Matrix3d();// = Util.rotationMatrix(right, y);
+        yrot.rotation(y, right);
+        //logOut("old pos:", pos);
         pos.mul(xrot);
-        logOut("new pos:", pos);
-        pos = pos.mul(yrot);
-        logOut("old fwd:", fwd);
+        pos.mul(yrot);
+        pos.normalize();
+        //logOut("new pos:", pos);
+        //logOut("old fwd:", fwd);
         fwd.mul(xrot);
-        logOut("new fwd:", fwd);
-        fwd = fwd.mul(yrot);
-        up = up.mul(yrot);
+        fwd.mul(yrot);
+        fwd.normalize();
+        //logOut("new fwd:", fwd);
         v_changed = true;
     }
     // </editor-fold>
     // <editor-fold desc="Translation">
     public void translateForward(double q)
     {
-        pos.add(fwd.x*q, fwd.y*q, fwd.z*q);
-        v_changed = true;
+        transl.add(fwd.x*q, fwd.y*q, 0.0);
+        t_changed = true;
     }
 
     public void translateRight(double q)
     {
         Vector3d right = new Vector3d();
         fwd.cross(up, right);
-        pos.add(right.x*q, right.y*q, right.z*q);
-        v_changed = true;
+        right.normalize();
+        transl.add(right.x*q, right.y*q, 0.0);
+        t_changed = true;
     }
 
     public void translateUp(double q)
     {
-        pos.add(up.x*q, up.y*q, up.z*q);
-        v_changed = true;
+        transl.add(0.0, 0.0, q);
+        t_changed = true;
     }
     // </editor-fold>
     // <editor-fold desc="Projection">
@@ -166,6 +191,12 @@ public class Camera3 {
     {
         aspect = (float)width/(float)height;
         p_changed = true;
+    }
+
+    public void zoom(double q)
+    {
+        pos.mul(1.0+q);
+        v_changed = true;
     }
     // </editor-fold>
 
