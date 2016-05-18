@@ -112,6 +112,7 @@ public class Lwjgl extends Thread {
         glLineWidth(3.0f);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
+        glOrtho(-10, 10, -10, 10, -10, 10);
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         shader.bind();
         renderablesList.add(new CoordSystem());
@@ -269,7 +270,7 @@ public class Lwjgl extends Thread {
     }
 
     private void keyboardInput() {
-        float speed = 1f;
+        float speed = 0.1f;
 
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
             speed = speed * 5;
@@ -294,11 +295,11 @@ public class Lwjgl extends Thread {
         }
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
             //camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
-            camera.translateForward(speed*10.0f);
+            camera.translateForward(speed);
         }
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
             //camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
-            camera.translateForward(speed*-10.0f);
+            camera.translateForward(-speed);
         }
         if (transl.x != 0 || transl.y != 0) {
             input = true;

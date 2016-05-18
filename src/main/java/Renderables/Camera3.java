@@ -2,10 +2,7 @@ package Renderables;
 
 
 import OpenGL.Shader;
-import org.joml.Matrix3d;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector3d;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import static UI.Logger.*;
@@ -34,11 +31,11 @@ public class Camera3 {
     public Camera3()
     {
         pos = new Vector3d(0, 2, 0);
-        transl = new Vector3d(0, 0, 0);
+        transl = new Vector3d(0.5, 0, 0);
         up = new Vector3d(0, 0, 1);
         fwd = new Vector3d(0, -1, 0);
-        fov = 45;
-        aspect = 1;
+        fov = 45.0f;
+        aspect = 1.0f;
         matrix = new Matrix4f();
 
         p_changed = true;
@@ -58,9 +55,11 @@ public class Camera3 {
             if(t_changed)
                 makeTranslationMatrix();
             matrix = new Matrix4f();
-            matrix.mul(p_matrix);
-            matrix.mul(t_matrix);
+            //matrix.mul(p_matrix);
             matrix.mul(v_matrix);
+            logOut("View Matrix:", v_matrix);
+            matrix.mul(t_matrix);
+            logOut("Translation Matrix:", t_matrix);
             logOut("Camera Matrix:", matrix);
         }
         return matrix;
@@ -69,31 +68,40 @@ public class Camera3 {
     protected void makeProjectionMatrix()
     {
         p_matrix = new Matrix4f();
-        // TODO projection matrix
+        p_matrix.perspective((float)(fov*Math.PI/180.0), aspect, 0.1f, 100.0f);
         p_changed = false;
     }
 
     protected void makeViewMatrix()
     {
-        v_matrix = new Matrix4f(
-                1.0f, 0.0f, 0.0f, (float)(-pos.x),
-                0.0f, 1.0f, 0.0f, (float)(-pos.y),
-                0.0f, 0.0f, 1.0f, (float)(-pos.z),
-                0.0f, 0.0f, 0.0f, 1.0f
-        );
+        v_matrix = new Matrix4f();
+        //        1.0f, 0.0f, 0.0f, (float)(-pos.x),
+        //        0.0f, 1.0f, 0.0f, (float)(-pos.y),
+        //        0.0f, 0.0f, 1.0f, (float)(-pos.z),
+        //        0.0f, 0.0f, 0.0f, 1.0f
+        //);
+        v_matrix.lookAlong((float)fwd.x, (float)fwd.y, (float)fwd.z, 0.0f, 0.0f, 1.0f);
+        //v_matrix.lookAt((float)pos.x, (float)pos.x, (float)pos.x, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
         //v_matrix.translate((float)(-pos.x), (float)(-pos.x), (float)(-pos.x));
-        v_matrix.lookAlong((float)fwd.x, (float)fwd.y, (float)fwd.z, (float)up.x, (float)up.y, (float)up.z);
         v_changed = false;
     }
 
     protected void makeTranslationMatrix()
     {
         t_matrix = new Matrix4f(
-                1.0f, 0.0f, 0.0f, (float)transl.x,
-                0.0f, 1.0f, 0.0f, (float)transl.y,
-                0.0f, 0.0f, 1.0f, (float)transl.z,
+                1.0f, 0.0f, 0.0f, (float)(transl.x),
+                0.0f, 1.0f, 0.0f, (float)(transl.y),
+                0.0f, 0.0f, 1.0f, (float)(transl.z),
                 0.0f, 0.0f, 0.0f, 1.0f
         );
+        //t_matrix = new Matrix4f(
+        //        1.0f, 0.0f, 0.0f, (float)(pos.x),
+        //        0.0f, 1.0f, 0.0f, (float)(pos.y),
+        //        0.0f, 0.0f, 1.0f, (float)(pos.z),
+        //        0.0f, 0.0f, 0.0f, 1.0f
+        //);
+        //t_matrix.translate((float)(-pos.x), (float)(-pos.y), (float)(-pos.z));
+        t_matrix.transpose();
         t_changed = false;
     }
 
@@ -148,11 +156,12 @@ public class Camera3 {
         //logOut("old pos:", pos);
         pos.mul(xrot);
         pos.mul(yrot);
-        pos.normalize();
+        //pos.normalize();
         //logOut("new pos:", pos);
         //logOut("old fwd:", fwd);
-        fwd.mul(xrot);
-        fwd.mul(yrot);
+        //fwd.mul(xrot);
+        //fwd.mul(yrot);
+        pos.mul(-1.0, fwd);
         fwd.normalize();
         //logOut("new fwd:", fwd);
         v_changed = true;
