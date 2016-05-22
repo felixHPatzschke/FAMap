@@ -1,7 +1,6 @@
 package UI;
 
 import FAProps.FAMap;
-import FAProps.Vector2;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import OpenGL.Shader;
@@ -11,6 +10,7 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
+import java.awt.*;
 import java.io.InputStream;
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
@@ -279,7 +279,7 @@ public class Lwjgl extends Thread {
             speed = speed / 5;
         }
 
-        Vector2 transl = new Vector2(0, 0);
+        Point transl = new Point(0, 0);
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             transl.y -= speed;

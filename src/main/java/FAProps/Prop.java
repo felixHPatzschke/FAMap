@@ -5,6 +5,8 @@
  */
 package FAProps;
 
+import org.joml.Vector3f;
+
 import java.io.IOException;
 
 /**
@@ -13,7 +15,7 @@ import java.io.IOException;
  */
 public class Prop {
 
-    private Vector3 position, rotationX, rotationY, rotationZ, scale;
+    private Vector3f position, rotationX, rotationY, rotationZ, scale;
     private String blueprintPath;
 
     public Prop(MapReader map) throws IOException {

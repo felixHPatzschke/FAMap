@@ -5,6 +5,9 @@
  */
 package FAProps;
 
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
 import java.io.*;
 
 /**
@@ -74,12 +77,12 @@ public class MapReader implements AutoCloseable{
         return s;
     }
 
-    public Vector3 getVector3() throws IOException {
-        return new Vector3(this.getFloat(), this.getFloat(), this.getFloat());
+    public Vector3f getVector3() throws IOException {
+        return new Vector3f(this.getFloat(), this.getFloat(), this.getFloat());
     }
 
-    public Vector4 getVector4() throws IOException {
-        return new Vector4(this.getFloat(), this.getFloat(), this.getFloat(), this.getFloat());
+    public Vector4f getVector4() throws IOException {
+        return new Vector4f(this.getFloat(), this.getFloat(), this.getFloat(), this.getFloat());
     }
 
     @Override

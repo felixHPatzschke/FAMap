@@ -5,6 +5,8 @@
  */
 package FAProps;
 
+import org.joml.Vector3f;
+
 import java.io.IOException;
 
 /**
@@ -15,7 +17,7 @@ public class Decal {
 
     private int type, ownerArmy;
     private String[] texPathes;
-    private Vector3 scale, position, rotation;
+    private Vector3f scale, position, rotation;
     private float cutOffLOD, nearCutOffLOD;
 
     public Decal(MapReader map) throws IOException {

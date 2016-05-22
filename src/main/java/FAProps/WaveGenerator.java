@@ -5,6 +5,8 @@
  */
 package FAProps;
 
+import org.joml.Vector3f;
+
 import java.io.IOException;
 
 /**
@@ -17,7 +19,7 @@ public class WaveGenerator {
             periodSecond, scaleFirst, scaleSecond, frameCount, frameRateFirst,
             frameRateSecond, stripCount;
     private String textureName, rampName;
-    private Vector3 position, velocity;
+    private Vector3f position, velocity;
 
     public WaveGenerator(MapReader map) throws IOException {
         textureName = map.getString();

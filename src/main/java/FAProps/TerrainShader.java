@@ -5,6 +5,9 @@
  */
 package FAProps;
 
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
 import java.io.IOException;
 
 import static UI.Logger.logOut;
@@ -18,8 +21,8 @@ public class TerrainShader {
     private String terrainShader, texPathBackground, textPathSkyCubemap;
     private String[][] texPathEnvCubemap;
     private float lightingMultiplier, bloom, fogMin, fogMax;
-    private Vector3 sunDirection, sunColor, sunAmbience, shadowFillColor, fogColor;
-    private Vector4 specularColor;
+    private Vector3f sunDirection, sunColor, sunAmbience, shadowFillColor, fogColor;
+    private Vector4f specularColor;
 
     public TerrainShader(MapReader map) throws IOException {
         terrainShader = map.getString();
