@@ -1,5 +1,5 @@
 import UI.Launcher;
-import UI.Lwjgl;
+import UI.GLContextThread;
 import UI.Settings;
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ public class MapTest {
     public void openMap(){
         Settings.init();
         Launcher.setNatives();
-        Lwjgl lw = new Lwjgl();
+        GLContextThread lw = new GLContextThread();
         lw.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {

@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.MainUIController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.ToolboxController">
    <children>
       <MenuBar>
         <menus>
@@ -17,13 +23,13 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ListView prefHeight="200.0" prefWidth="200.0" />
+      <ListView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
       <VBox spacing="4.0">
          <children>
             <AnchorPane VBox.vgrow="NEVER">
                <children>
                   <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="6.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="2.0" />
-                  <MenuButton layoutX="34.0" layoutY="6.0" mnemonicParsing="false" text="MenuButton" AnchorPane.leftAnchor="40.0">
+                  <MenuButton layoutX="34.0" layoutY="6.0" mnemonicParsing="false" text="MenuButton" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="5.0">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />
@@ -31,19 +37,15 @@
                   </MenuButton>
                </children>
             </AnchorPane>
-            <AnchorPane>
-               <children>
-                  <Label text="Size:" AnchorPane.leftAnchor="5.0">
-                     <opaqueInsets>
-                        <Insets />
-                     </opaqueInsets>
-                  </Label>
-                  <Slider layoutY="17.0" prefHeight="14.0" prefWidth="177.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-               </children>
-            </AnchorPane>
+            <Label text="Size:">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </Label>
+            <Slider prefHeight="14.0" prefWidth="177.0" />
          </children>
          <VBox.margin>
-            <Insets />
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </VBox>
    </children>

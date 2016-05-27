@@ -10,14 +10,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Set;
 
 import static UI.Logger.*;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 /**
  * Created by Game on 01.01.2016.
@@ -46,7 +41,7 @@ public class Launcher extends Application{
             @Override
             public void handle(WindowEvent event) {
                 // TODO terminate glfw
-                MainUIController.exit();
+                ToolboxController.exit();
             }
         });
 
@@ -81,7 +76,7 @@ public class Launcher extends Application{
         });
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/main.fxml"));
         Parent p = loader.load();
-        MainUIController controller = loader.getController();
+        ToolboxController controller = loader.getController();
         primaryStage.setTitle("FAHeightmap");
         primaryStage.setScene(new Scene(p));
         controller.setStage(primaryStage);

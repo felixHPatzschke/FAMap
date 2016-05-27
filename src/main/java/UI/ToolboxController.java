@@ -1,24 +1,19 @@
 package UI;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-import static UI.Logger.logOut;
 
 /**
  * Created by Basti on 03.01.2016.
  */
-public class MainUIController {
+public class ToolboxController {
 
-    private static Lwjgl lwjgl;
+    private static GLContextThread GLContextThread;
 
     private Stage stage;
 
@@ -28,8 +23,8 @@ public class MainUIController {
 
     @FXML
     public void initialize(){
-        lwjgl = new Lwjgl();
-        lwjgl.start();
+        GLContextThread = new GLContextThread();
+        GLContextThread.start();
     }
 
     @FXML
@@ -41,7 +36,7 @@ public class MainUIController {
         if(f!=null) {
             Settings.path = f.getParent();
             try {
-                lwjgl.loadMap(new FileInputStream(f),f.getName());
+                GLContextThread.loadMap(new FileInputStream(f),f.getName());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -56,6 +51,6 @@ public class MainUIController {
 
     public static void exit()
     {
-        lwjgl.stopThread();
+        GLContextThread.stopThread();
     }
 }

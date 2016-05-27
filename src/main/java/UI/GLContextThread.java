@@ -24,7 +24,7 @@ import static org.lwjgl.system.MemoryUtil.*;
 /**
  * Created by Game on 01.01.2016.
  */
-public class Lwjgl extends Thread {
+public class GLContextThread extends Thread {
 
     private GLFWErrorCallback errorCallback;
     private GLFWKeyCallback keyCallback;
@@ -42,19 +42,19 @@ public class Lwjgl extends Thread {
     private MapRenderer mapRenderer = new HeightmapRenderer();
     //private Camera camera = new Camera();
     //private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
-    private Camera3 camera = new Camera3();
+    private Camera4 camera = new Camera4();
     private RenderableMap renderableMap = new RenderableMap();
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
     private int height, width;
     private boolean resized, input = true, mouseLocked = false, focused = true;
-    Vector2d oldMouse = new Vector2d(0.0, 0.0);
+    private Vector2d oldMouse = new Vector2d(0.0, 0.0);
 
 
     private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        try{
+        try {
             glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
         } catch (Throwable x) {
             logErr("Failed to set GLFW error callback: ", x.getLocalizedMessage());
@@ -72,6 +72,8 @@ public class Lwjgl extends Thread {
         width = Settings.glfw_window_width;
         height = Settings.glfw_window_height;
 
+        camera.setViewport(width,height);
+
         // Create the window
         window = glfwCreateWindow(width, height, "FAHeightmap", NULL, NULL);
         if (window == NULL)
@@ -79,8 +81,6 @@ public class Lwjgl extends Thread {
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
 
-        // Get the resolution of the primary monitor
-        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center our window
         glfwSetWindowPos(
                 window,
@@ -97,8 +97,8 @@ public class Lwjgl extends Thread {
     }
 
     public static void checkError() throws Exception {
-        int error=glGetError();
-        if(error!=GL_NO_ERROR){
+        int error = glGetError();
+        if (error != GL_NO_ERROR) {
             throw new Exception(String.valueOf(error));
         }
     }
@@ -112,8 +112,7 @@ public class Lwjgl extends Thread {
         glLineWidth(3.0f);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
-        glOrtho(-10, 10, -10, 10, -10, 10);
-        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shader.bind();
         renderablesList.add(new CoordSystem());
         renderablesList.add(new PlainSystem());
@@ -126,11 +125,8 @@ public class Lwjgl extends Thread {
                 height = h;
                 Settings.glfw_window_width = w;
                 Settings.glfw_window_height = h;
-                if (width > height) {
-                    GL11.glViewport(0, 0, width, width);
-                } else {
-                    GL11.glViewport(0, 0, height, height);
-                }
+
+                GL11.glViewport(0, 0, width, height);
             }
         });
         glfwSetWindowPosCallback(window, windowPosCallback = new GLFWWindowPosCallback() {
@@ -156,7 +152,7 @@ public class Lwjgl extends Thread {
                 }
                 //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
                 //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
-                camera.zoom(yoffset*0.05);
+                camera.zoom(yoffset * 0.05);
             }
         });
         shader.unbind();
@@ -165,12 +161,10 @@ public class Lwjgl extends Thread {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 logOut("Key Action: " + key + " scancode " + scancode);
-                if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-                    glfwSetWindowShouldClose(window, GLFW_TRUE); // We will detect this in our rendering loop
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
                     //camera.init(shader);
                     mouseLocked = !mouseLocked;
-                    logOut("Mouse Locked: " + ((mouseLocked)?("true"):("false")));
+                    logOut("Mouse Locked: " + ((mouseLocked) ? ("true") : ("false")));
                     if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                     } else {
@@ -186,6 +180,7 @@ public class Lwjgl extends Thread {
             }
         });
         checkError();
+
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
             checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
@@ -200,7 +195,6 @@ public class Lwjgl extends Thread {
                 mapIs = null;
             }
 
-
             if (resized) {
                 camera.setViewport(width, height);
                 resized = false;
@@ -213,8 +207,8 @@ public class Lwjgl extends Thread {
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 r.applyMatrix(shader);
-                GL20.glUniform1f(shader.getTransparencyLocation(),r.getTransparency());
-                r.render(null); // TODO
+                GL20.glUniform1f(shader.getTransparencyLocation(), r.getTransparency());
+                r.render(null); //TODO Give Camera to renderer to reduce performance impact of large models outside of the camera
             });
 
             if (map != null) {
@@ -222,6 +216,7 @@ public class Lwjgl extends Thread {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName());
                 }
             }
+
             shader.unbind();
             glfwSwapBuffers(window);
             if (input) {
@@ -232,8 +227,6 @@ public class Lwjgl extends Thread {
             }
         }
     }
-
-    private int oldX = 0, oldY = 0;
 
     private void mouseMovement() {
         if (focused) {
@@ -247,7 +240,7 @@ public class Lwjgl extends Thread {
             double dX = x.get() - oldMouse.x;
             double dY = y.get() - oldMouse.y;
 
-            if (((int)dX) != 0 || ((int)dY) != 0) {
+            if (((int) dX) != 0 || ((int) dY) != 0) {
 
                 //logOut("Old Mouse Position: " + oldMouse.toString());
                 oldMouse.x += dX;
@@ -258,9 +251,9 @@ public class Lwjgl extends Thread {
                 if (mouseLocked) {
                     logOut("Mouse Position: " + oldMouse.toString(), "Mouse Movement: " + dX + " | " + dY);
                     //if (((int)dX) != 0 || ((int)dY) != 0) {
-                        //glfwSetCursorPos(window, width / 2, height / 2);
-                        //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
-                        camera.rotateCenter(dX*0.01, dY*0.01);
+                    //glfwSetCursorPos(window, width / 2, height / 2);
+                    //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
+                    camera.rotateCenter(dX * 0.1, dY * 0.1);
                     //}
                 } else {
                     //TODO Add ray casting and tool code here
@@ -295,33 +288,45 @@ public class Lwjgl extends Thread {
         }
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
             //camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
-            camera.translateForward(speed);
+            //camera.translateForward(speed);
         }
         if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
             //camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
-            camera.translateForward(-speed);
+            //camera.translateForward(-speed);
         }
         if (transl.x != 0 || transl.y != 0) {
             input = true;
             //transl.rotate(-camera.getEyeZ());
             //camera.addTranslation((float) transl.x, (float) transl.y, 0);
-            camera.translateRight((float)transl.x);
-            camera.translateUp((float)transl.y);
+            //camera.translateRight((float)transl.x);
+            //camera.translateUp((float)transl.y);
         }
     }
 
-    public void cleanup(){
-        shader.unbind();
-        shader.destroy();
-        for (Renderable r : renderablesList) {
-            r.remove();
+    public void cleanup() {
+        if (shader != null) {
+            shader.unbind();
+            shader.destroy();
         }
-        keyCallback.release();
-        errorCallback.release();
-        windowPosCallback.release();
-        scrollCallback.release();
-        windowFocusCallback.release();
-        windowSizeCallback.release();
+        if (renderablesList != null) {
+            renderablesList.forEach(renderable -> {
+                if (renderable != null) {
+                    renderable.remove();
+                }
+            });
+        }
+        if (keyCallback != null)
+            keyCallback.release();
+        if (errorCallback != null)
+            errorCallback.release();
+        if (windowPosCallback != null)
+            windowPosCallback.release();
+        if (scrollCallback != null)
+            scrollCallback.release();
+        if (windowFocusCallback != null)
+            windowFocusCallback.release();
+        if (windowSizeCallback != null)
+            windowSizeCallback.release();
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -335,24 +340,19 @@ public class Lwjgl extends Thread {
             loop();
             // Release window and window callbacks
             logOut("Terminating");
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             logErr(ex);
             ex.printStackTrace();
             throw new RuntimeException(ex);
         } finally {
             logOut("Cleaning up");
-            try {
-                cleanup();
-            } catch(NullPointerException nex) {
-                logErr(nex);
-                nex.printStackTrace();
-            }
-            MainUIController.exit(0);
+            cleanup();
+            ToolboxController.exit(0);
         }
     }
 
-    public void stopThread(){
-        glfwSetWindowShouldClose(window,GLFW_TRUE);
+    public void stopThread() {
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
         glfwPostEmptyEvent();
     }
 

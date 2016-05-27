@@ -1,6 +1,6 @@
 package Renderables;
 
-import UI.Lwjgl;
+import UI.GLContextThread;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -21,9 +21,9 @@ public class PlainSystem extends Renderable {
     public PlainSystem() throws Exception {
 
         ibo = GL15.glGenBuffers();
-        Lwjgl.checkError();
+        GLContextThread.checkError();
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
-        Lwjgl.checkError();
+        GLContextThread.checkError();
         ShortBuffer indices = BufferUtils.createShortBuffer(18);
         indices.put(new short[]{
                 0, 1, 2,
@@ -37,7 +37,7 @@ public class PlainSystem extends Renderable {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        Lwjgl.checkError();
+        GLContextThread.checkError();
 
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
@@ -84,7 +84,7 @@ public class PlainSystem extends Renderable {
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
 
-        Lwjgl.checkError();
+        GLContextThread.checkError();
 
         vbo = GL15.glGenBuffers();
 
@@ -93,7 +93,7 @@ public class PlainSystem extends Renderable {
         GL20.glVertexAttribPointer(0, 3, GL11.GL_INT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
-        Lwjgl.checkError();
+        GLContextThread.checkError();
 
         cbo = GL15.glGenBuffers();
 
@@ -104,7 +104,7 @@ public class PlainSystem extends Renderable {
 
         GL30.glBindVertexArray(0);
 
-        Lwjgl.checkError();
+        GLContextThread.checkError();
     }
 
     @Override
