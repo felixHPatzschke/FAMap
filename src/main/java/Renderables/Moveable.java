@@ -20,7 +20,8 @@ public abstract class Moveable {
         if(refresh) {
             matrix = new Matrix4f();
 
-            matrix.translate(translX,translY,translZ);
+            matrix.scale(scaleX,scaleY,scaleZ);
+            //matrix.translate(translX,translY,translZ);
             //matrix.rotate(eyeX,1,0,0);
             //matrix.rotate(eyeY,0,1,0);
             //matrix.rotate(eyeZ,0,0,1);

@@ -11,7 +11,6 @@ import java.io.IOException;
 import static UI.Logger.logOut;
 
 /**
- *
  * @author bhofmann
  */
 public class MapDetails {
@@ -22,7 +21,7 @@ public class MapDetails {
     private String name;
 
     public MapDetails(String name, MapReader map) throws IOException {
-        this.name=name;
+        this.name = name;
         previewSize = map.getInt32();
         logOut("Preview Size    : " + previewSize);
         map.skip(previewSize);
@@ -34,6 +33,7 @@ public class MapDetails {
         logOut("Width           : " + width);
         logOut("Height          : " + height);
         heightmapScale = map.getFloat();
+        logOut("Heightmap Scale : " + heightmapScale);
         heightmap = new int[width + 1][height + 1];
         int i = 0, j;
         logOut("---------");
@@ -76,7 +76,7 @@ public class MapDetails {
         return heightmapScale;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 }

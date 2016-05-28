@@ -6,6 +6,7 @@ import MapRenderers.MapRenderer;
 import OpenGL.Shader;
 import Renderables.*;
 import org.joml.Vector2d;
+import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -43,7 +44,8 @@ public class GLContextThread extends Thread {
     //private Camera camera = new Camera();
     //private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
     private Camera4 camera = new Camera4();
-    private RenderableMap renderableMap = new RenderableMap();
+    private RenderableMap renderableMap;
+    private RenderableWater renderableWater;
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
 
     private int height, width;
@@ -72,7 +74,7 @@ public class GLContextThread extends Thread {
         width = Settings.glfw_window_width;
         height = Settings.glfw_window_height;
 
-        camera.setViewport(width,height);
+        camera.setViewport(width, height);
 
         // Create the window
         window = glfwCreateWindow(width, height, "FAHeightmap", NULL, NULL);
@@ -105,11 +107,16 @@ public class GLContextThread extends Thread {
 
     private void loop() throws Exception {
         GL.createCapabilities();
-        renderablesList.add(0, renderableMap);
+        renderableMap=new RenderableMap();
+        renderableWater=new RenderableWater();
+
+        renderablesList.add(renderableMap);
+        renderablesList.add(renderableWater);
         shader = new Shader("simple");
         // Set the clear color
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glLineWidth(3.0f);
+        glEnable(GL43.GL_DEBUG_OUTPUT);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -160,11 +167,9 @@ public class GLContextThread extends Thread {
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-                logOut("Key Action: " + key + " scancode " + scancode);
                 if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE) {
                     //camera.init(shader);
                     mouseLocked = !mouseLocked;
-                    logOut("Mouse Locked: " + ((mouseLocked) ? ("true") : ("false")));
                     if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                     } else {
@@ -192,6 +197,7 @@ public class GLContextThread extends Thread {
                 map = new FAMap();
                 map.loadFAMap(mapIs, mapName);
                 renderableMap.setMap(map);
+                renderableWater.setWaterShader(map);
                 mapIs = null;
             }
 
@@ -208,7 +214,7 @@ public class GLContextThread extends Thread {
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 r.applyMatrix(shader);
                 GL20.glUniform1f(shader.getTransparencyLocation(), r.getTransparency());
-                r.render(null); //TODO Give Camera to renderer to reduce performance impact of large models outside of the camera
+                r.render(camera);
             });
 
             if (map != null) {
@@ -249,7 +255,6 @@ public class GLContextThread extends Thread {
                 input = true;
 
                 if (mouseLocked) {
-                    logOut("Mouse Position: " + oldMouse.toString(), "Mouse Movement: " + dX + " | " + dY);
                     //if (((int)dX) != 0 || ((int)dY) != 0) {
                     //glfwSetCursorPos(window, width / 2, height / 2);
                     //camera.addRotationDeg(((float) dY) / 10, 0, ((float) dX) / 10);
@@ -300,6 +305,14 @@ public class GLContextThread extends Thread {
             //camera.addTranslation((float) transl.x, (float) transl.y, 0);
             //camera.translateRight((float)transl.x);
             //camera.translateUp((float)transl.y);
+        }
+        if (map != null) {
+            Vector3f pos = camera.getPos();
+            if (pos.x >= 0 && pos.x <= map.getMapDetails().getHeightmap().length - 1 &&
+                    pos.y >= 0 && pos.y <= map.getMapDetails().getHeightmap()[0].length - 1) {
+                pos.z=-((float)map.getMapDetails().getHeightmap()[(int)pos.x][(int)pos.y]*map.getMapDetails().getHeightmapScale());
+                camera.setPos(pos);
+            }
         }
     }
 

@@ -46,7 +46,7 @@ public class Camera4 {
         }
 
         matrix = new Matrix4f();
-        matrix.perspective(fov,aspect,0.1f,5000);
+        matrix.perspective(fov,aspect,1f,500000);
 
         matrix.lookAlong(posToCamera,up);
         matrix.translate(pos.x+posToCamera.x,pos.y+posToCamera.y,pos.z+posToCamera.z);
@@ -83,10 +83,18 @@ public class Camera4 {
     }
 
     public void zoom(double q) {
-        cameraHeight = (float) (cameraHeight +q);
+        cameraHeight = (float) (cameraHeight + q);
         if(cameraHeight <1){
             cameraHeight =1;
         }
         angleChanged=true;
+    }
+
+    public void setPos(Vector3f pos) {
+        this.pos = pos;
+    }
+
+    public Vector3f getPos() {
+        return pos;
     }
 }

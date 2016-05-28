@@ -36,10 +36,6 @@ public class CoordSystem extends Renderable {
 
         GLContextThread.checkError();
 
-        vao = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vao);
-        vbo = GL15.glGenBuffers();
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
         IntBuffer vertices = BufferUtils.createIntBuffer(18);
         vertices.put(new int[]{
                 -1, 0, 0,
@@ -89,7 +85,7 @@ public class CoordSystem extends Renderable {
     }
 
     @Override
-    public void render(Camera camera) {
+    public void render(Camera4 camera) {
         GL30.glBindVertexArray(vao);
 
         GL20.glEnableVertexAttribArray(0);

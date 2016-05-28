@@ -39,10 +39,6 @@ public class PlainSystem extends Renderable {
 
         GLContextThread.checkError();
 
-        vao = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vao);
-        vbo = GL15.glGenBuffers();
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
         IntBuffer vertices = BufferUtils.createIntBuffer(12 * 3);
         vertices.put(new int[]{
                 1, 1, 0,
@@ -108,7 +104,7 @@ public class PlainSystem extends Renderable {
     }
 
     @Override
-    public void render(Camera camera) {
+    public void render(Camera4 camera) {
         GL30.glBindVertexArray(vao);
 
         GL20.glEnableVertexAttribArray(0);

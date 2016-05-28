@@ -2,11 +2,20 @@ group 'faf'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = 1.8
 
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -15,4 +24,10 @@ dependencies {
     compile 'org.lwjgl:lwjgl:3.0.0b'
     compile 'org.json:json:20160212'
     compile 'org.joml:joml:1.7.1'
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'UI.Launcher'
+    }
 }

@@ -7,7 +7,13 @@ import javafx.scene.image.Image;
  */
 public abstract class Tool {
     private Image preview, brush;
+    private String name;
     private int size;
+
+    Tool(String name,Image preview){
+        this.name=name;
+        this.preview=preview;
+    }
 
     //public abstract void applyTool();
 
@@ -38,4 +44,12 @@ public abstract class Tool {
     }
 
     public abstract boolean hasBrush();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

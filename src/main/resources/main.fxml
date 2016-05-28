@@ -23,13 +23,13 @@
           </Menu>
         </menus>
       </MenuBar>
-      <ListView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+      <ListView fx:id="toolList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
       <VBox spacing="4.0">
          <children>
             <AnchorPane VBox.vgrow="NEVER">
                <children>
                   <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="6.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="2.0" />
-                  <MenuButton layoutX="34.0" layoutY="6.0" mnemonicParsing="false" text="MenuButton" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="5.0">
+                  <MenuButton layoutX="34.0" layoutY="6.0" mnemonicParsing="false" text="MenuButton" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="6.0">
                     <items>
                       <MenuItem mnemonicParsing="false" text="Action 1" />
                       <MenuItem mnemonicParsing="false" text="Action 2" />

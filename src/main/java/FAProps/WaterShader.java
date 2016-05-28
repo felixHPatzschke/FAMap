@@ -49,6 +49,14 @@ public class WaterShader {
         return waterElevation;
     }
 
+    public float getWaterElevationDeep() {
+        return waterElevationDeep;
+    }
+
+    public float getWaterElevationAbyss() {
+        return waterElevationAbyss;
+    }
+
     public void setWaterElevation(int waterElevation) {
         this.waterElevation = waterElevation;
     }

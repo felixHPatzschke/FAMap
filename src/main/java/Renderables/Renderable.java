@@ -4,7 +4,7 @@ package Renderables;
  * Created by Dev on 17.02.2016.
  */
 public abstract class Renderable extends Moveable {
-    public abstract void render(Camera camera);
+    public abstract void render(Camera4 camera);
 
     public abstract void remove();
 
@@ -14,5 +14,5 @@ public abstract class Renderable extends Moveable {
 
     public float getTransparency(){
         return 1;
-    };
+    }
 }
