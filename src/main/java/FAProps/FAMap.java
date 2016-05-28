@@ -188,6 +188,10 @@ public class FAMap {
         }
     }
 
+    public Texturemap getTexturemap() {
+        return texturemap;
+    }
+
     public MapDetails getMapDetails() {
         return mapDetails;
     }

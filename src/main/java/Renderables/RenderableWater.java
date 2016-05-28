@@ -18,6 +18,7 @@ import java.nio.ShortBuffer;
 public class RenderableWater extends Renderable {
 
     private int waterIbo, waterVao, waterVbo, waterCbo;
+    private boolean loaded=false;
 
     public RenderableWater(){
         waterIbo = GL15.glGenBuffers();
@@ -97,7 +98,6 @@ public class RenderableWater extends Renderable {
         IntBuffer vertices = BufferUtils.createIntBuffer(12 * 3);
         WaterShader shader = map.getWaterShader();
 
-
         int width = map.getMapDetails().getWidth(), height = map.getMapDetails().getHeight();
         int
                 water = (int) (shader.getWaterElevation()), //* map.getMapDetails().getHeightmapScale()),
@@ -127,6 +127,7 @@ public class RenderableWater extends Renderable {
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(0, 3, GL11.GL_INT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        loaded=true;
     }
 
     @Override
@@ -149,6 +150,11 @@ public class RenderableWater extends Renderable {
         GL20.glDisableVertexAttribArray(1);
 
         GL30.glBindVertexArray(0);
+    }
+
+    @Override
+    public boolean isRenderable(){
+        return loaded;
     }
 
     @Override

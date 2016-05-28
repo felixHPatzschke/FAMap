@@ -3,9 +3,11 @@ package UI;
 import FAProps.FAMap;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
+import MapRenderers.TexturemapRenderer;
 import OpenGL.Shader;
 import Renderables.*;
 import org.joml.Vector2d;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -186,7 +188,9 @@ public class GLContextThread extends Thread {
         });
         checkError();
 
+        long time;
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+            time=System.nanoTime();
             checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             shader.bind();
@@ -219,7 +223,7 @@ public class GLContextThread extends Thread {
 
             if (map != null) {
                 if (map.isLoaded()) {
-                    glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName());
+                    glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName()+" FPS: "+(1000000000/(System.nanoTime()-time)));
                 }
             }
 
@@ -277,19 +281,19 @@ public class GLContextThread extends Thread {
             speed = speed / 5;
         }
 
-        Point transl = new Point(0, 0);
+        Vector2f transl = new Vector2f(0, 0);
 
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            transl.y -= speed;
-        }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            transl.y += speed;
-        }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
             transl.x -= speed;
         }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             transl.x += speed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            transl.y += speed;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            transl.y -= speed;
         }
         if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
             //camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
@@ -301,16 +305,13 @@ public class GLContextThread extends Thread {
         }
         if (transl.x != 0 || transl.y != 0) {
             input = true;
-            //transl.rotate(-camera.getEyeZ());
-            //camera.addTranslation((float) transl.x, (float) transl.y, 0);
-            //camera.translateRight((float)transl.x);
-            //camera.translateUp((float)transl.y);
+            camera.moveBy(transl);
         }
         if (map != null) {
             Vector3f pos = camera.getPos();
-            if (pos.x >= 0 && pos.x <= map.getMapDetails().getHeightmap().length - 1 &&
-                    pos.y >= 0 && pos.y <= map.getMapDetails().getHeightmap()[0].length - 1) {
-                pos.z=-((float)map.getMapDetails().getHeightmap()[(int)pos.x][(int)pos.y]*map.getMapDetails().getHeightmapScale());
+            if (-pos.x >= 0 && -pos.x <= map.getMapDetails().getHeightmap().length - 1 &&
+                    -pos.y >= 0 && -pos.y <= map.getMapDetails().getHeightmap()[0].length - 1) {
+                pos.z=-((float)map.getMapDetails().getHeightmap()[(int)-pos.x][(int)-pos.y]*map.getMapDetails().getHeightmapScale());
                 camera.setPos(pos);
             }
         }
