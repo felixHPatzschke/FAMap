@@ -59,22 +59,22 @@ public class MapReader implements AutoCloseable{
     }
 
     public String getString() throws IOException {
-        String s = "";
+        StringBuilder sb = new StringBuilder();
         char add;
         while ((add = this.getChar()) != 0) {
-            s = s + add;
+            sb.append(add);
         }
-        return s;
+        return sb.toString();
     }
 
     public String getString(int length) throws IOException {
-        String s = "";
+        StringBuilder sb = new StringBuilder();
         int i = 0;
         while (i < length) {
-            s = s + this.getChar();
+            sb.append(getChar());
             i++;
         }
-        return s;
+        return sb.toString();
     }
 
     public Vector3f getVector3() throws IOException {
