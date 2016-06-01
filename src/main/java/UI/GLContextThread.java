@@ -220,14 +220,14 @@ public class GLContextThread extends Thread {
                 r.render(camera);
             });
 
+            shader.unbind();
+            glfwSwapBuffers(window);
+
             if (map != null) {
                 if (map.isLoaded()) {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName()+" FPS: "+(1000000000/(System.nanoTime()-time)));
                 }
             }
-
-            shader.unbind();
-            glfwSwapBuffers(window);
 
             mouseMovement();
             keyboardInput();
