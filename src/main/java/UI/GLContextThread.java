@@ -9,6 +9,7 @@ import Renderables.*;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -16,6 +17,7 @@ import org.lwjgl.opengl.*;
 import java.awt.*;
 import java.io.InputStream;
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static UI.Logger.logOut;
@@ -210,9 +212,6 @@ public class GLContextThread extends Thread {
                 resized = false;
             }
 
-            mouseMovement();
-            keyboardInput();
-
             camera.applyMatrix(shader);
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
@@ -229,6 +228,10 @@ public class GLContextThread extends Thread {
 
             shader.unbind();
             glfwSwapBuffers(window);
+
+            mouseMovement();
+            keyboardInput();
+
             if (input) {
                 glfwPollEvents();
                 input = false;
@@ -266,6 +269,7 @@ public class GLContextThread extends Thread {
                     //}
                 } else {
                     //TODO Add ray casting and tool code here
+                    do_mouse_to_worldspace_stuff();
                 }
             }
         }
@@ -343,6 +347,27 @@ public class GLContextThread extends Thread {
             windowSizeCallback.release();
         glfwDestroyWindow(window);
         glfwTerminate();
+    }
+
+    public void do_mouse_to_worldspace_stuff()
+    {
+        float x = 2*((float)oldMouse.x/(float)Settings.glfw_window_width)-1;
+        float y = -2*((float)oldMouse.y/(float)Settings.glfw_window_height)+1;
+        //FloatBuffer z_buf = BufferUtils.createFloatBuffer(4);
+        //glReadPixels((int)oldMouse.x, (int)oldMouse.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, z_buf);
+        //z_buf.rewind();
+
+        Vector4f near = camera.clipspaceToWorldspace(x, y, 0.0f);
+        Vector4f far = camera.clipspaceToWorldspace(x, y, 1.0f);
+        Vector4f l = new Vector4f();
+        far.sub(near, l);
+        float znear = near.z;
+        //float zfar = far.z;
+        float zl = l.z;
+        Vector4f pos = new Vector4f();
+        l.mul(znear/zl);
+        near.sub(l, pos);
+        logOut("Pos: " + pos);
     }
 
     @Override

@@ -4,8 +4,13 @@ import OpenGL.Shader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
+
+import java.nio.FloatBuffer;
+
+import static UI.Logger.logOut;
 
 /**
  * Created by Basti on 22.05.2016.
@@ -69,6 +74,28 @@ public class Camera4 {
 
     public void applyMatrix(Shader s) {
         GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(), false, getMatrix().get(BufferUtils.createFloatBuffer(16)));
+    }
+
+    /**
+     * Converts clipspace coordinates to worldspace coordinates
+     * @param clipx the x-value in clipspace (between -1 and 1)
+     * @param clipy the y-value in clipspace (between -1 and 1)
+     * @param depth the depthbuffer value at the screenspace coordinates corresponding to clipx and clipy (between 0 and 1)
+     * @return
+     */
+    public Vector4f clipspaceToWorldspace(float clipx, float clipy, float depth)
+    {
+        Matrix4f m = getMatrix();
+        m.invert();
+
+        Vector4f v = new Vector4f(clipx, clipy, depth, 1.0f);
+        v.mul(m);
+        v.x /= v.w;
+        v.y /= v.w;
+        v.z /= v.w;
+        v.w /= v.w;
+
+        return v;
     }
 
     public void rotateCenter(double x, double y) {
