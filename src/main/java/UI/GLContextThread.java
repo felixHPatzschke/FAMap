@@ -183,7 +183,7 @@ public class GLContextThread extends Thread {
                     if (mouseLocked) {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                     } else {
-                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
                     }
                 }
             }
@@ -226,7 +226,7 @@ public class GLContextThread extends Thread {
                 resized = false;
             }
 
-            camera.applyMatrix(shader);
+            camera.applyMatrix(mapShader);
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 r.applyMatrix(mapShader);
