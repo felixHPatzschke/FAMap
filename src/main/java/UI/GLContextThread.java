@@ -101,6 +101,7 @@ public class GLContextThread extends Thread {
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         // Enable v-sync
         glfwSwapInterval(1);
         // Make the window visible
