@@ -153,13 +153,13 @@ public class GLContextThread extends Thread {
             public void invoke(long window, double xoffset, double yoffset) {
                 float speed = 1f;
 
-                yoffset = yoffset * 10;
+                yoffset *= -10;
 
                 if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-                    speed = speed * (1 / map.getMapDetails().getHeightmapScale());
+                    speed *= (1 / map.getMapDetails().getHeightmapScale());
                 }
                 if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-                    speed = speed / (1 / map.getMapDetails().getHeightmapScale());
+                    speed /= (1 / map.getMapDetails().getHeightmapScale());
                 }
                 //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
                 //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
@@ -276,13 +276,13 @@ public class GLContextThread extends Thread {
     }
 
     private void keyboardInput() {
-        float speed = 0.1f;
+        float speed = 1.0f;
 
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            speed = speed * 5;
+            speed *= 5;
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-            speed = speed / 5;
+            speed /= 5;
         }
 
         Vector2f transl = new Vector2f(0, 0);
