@@ -1,5 +1,6 @@
 package Renderables;
 
+import OpenGL.MapShader;
 import OpenGL.Shader;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -33,6 +34,10 @@ public abstract class Moveable {
     }
 
     public void applyMatrix(Shader s){
+        GL20.glUniformMatrix4fv(s.getObjectMatrixLocation(),false,getMatrix().get(BufferUtils.createFloatBuffer(16)));
+    }
+
+    public void applyMatrix(MapShader s){
         GL20.glUniformMatrix4fv(s.getObjectMatrixLocation(),false,getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
 

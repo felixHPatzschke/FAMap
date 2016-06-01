@@ -4,6 +4,7 @@ import FAProps.FAMap;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
 import MapRenderers.TexturemapRenderer;
+import OpenGL.MapShader;
 import OpenGL.Shader;
 import Renderables.*;
 import org.joml.Vector2d;
@@ -19,6 +20,8 @@ import java.io.InputStream;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+
+import static OpenGL.MapShader.*;
 
 import static UI.Logger.logOut;
 import static UI.Logger.logErr;
@@ -43,6 +46,7 @@ public class GLContextThread extends Thread {
     private long window;
 
     private Shader shader;
+    private MapShader mapShader;
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
     //private Camera camera = new Camera();
@@ -55,6 +59,7 @@ public class GLContextThread extends Thread {
     private int height, width;
     private boolean resized, input = true, mouseLocked = false, focused = true;
     private Vector2d oldMouse = new Vector2d(0.0, 0.0);
+    private float toolPosX = 0, toolPosY = 0;
 
 
     private void init() {
@@ -117,6 +122,7 @@ public class GLContextThread extends Thread {
         renderablesList.add(renderableMap);
         renderablesList.add(renderableWater);
         shader = new Shader("simple");
+        mapShader = new MapShader();
         // Set the clear color
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glLineWidth(3.0f);
@@ -153,7 +159,7 @@ public class GLContextThread extends Thread {
             public void invoke(long window, double xoffset, double yoffset) {
                 float speed = 1f;
 
-                yoffset *= -10;
+                yoffset *= -1;
 
                 if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
                     speed *= (1 / map.getMapDetails().getHeightmapScale());
@@ -163,7 +169,7 @@ public class GLContextThread extends Thread {
                 }
                 //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
                 //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
-                camera.zoom(yoffset * 0.05);
+                camera.zoom(yoffset);
             }
         });
         shader.unbind();
@@ -195,7 +201,15 @@ public class GLContextThread extends Thread {
             time=System.nanoTime();
             checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            shader.bind();
+            //shader.bind();
+            mapShader.bind();
+            GL20.glUniform1i(mapShader.getFragEnumLocation(), FRAG_DEFAULT | FRAG_HEIGHT_LEVEL | FRAG_TOOL_BLOB);
+            GL20.glUniform1f(mapShader.getToolXLocation(), toolPosX);
+            GL20.glUniform1f(mapShader.getToolYLocation(), toolPosY);
+            GL20.glUniform1f(mapShader.getToolRSQRLocation(), 8.0f);
+            GL20.glUniform1f(mapShader.getHminLocation(), 0.0f);
+            GL20.glUniform1f(mapShader.getHmaxLocation(), 1000.0f);
+            GL20.glUniform1f(mapShader.getTransparencyLocation(), 0.5f);
 
             if (mapIs != null) {
                 renderableMap.remove();
@@ -215,12 +229,12 @@ public class GLContextThread extends Thread {
             camera.applyMatrix(shader);
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
-                r.applyMatrix(shader);
-                GL20.glUniform1f(shader.getTransparencyLocation(), r.getTransparency());
+                r.applyMatrix(mapShader);
+                GL20.glUniform1f(mapShader.getTransparencyLocation(), r.getTransparency());
                 r.render(camera);
             });
 
-            shader.unbind();
+            mapShader.unbind();
             glfwSwapBuffers(window);
 
             if (map != null) {
@@ -367,7 +381,9 @@ public class GLContextThread extends Thread {
         Vector4f pos = new Vector4f();
         l.mul(znear/zl);
         near.sub(l, pos);
-        logOut("Pos: " + pos);
+        //logOut("Pos: " + pos);
+        toolPosX = pos.x;
+        toolPosY = pos.y;
     }
 
     @Override

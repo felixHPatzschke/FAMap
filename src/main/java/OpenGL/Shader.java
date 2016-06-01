@@ -11,16 +11,8 @@ import static org.lwjgl.opengl.GL20.glBindAttribLocation;
 /**
  * Created by bhofmann on 23.09.2015.
  */
-public class Shader {
-    private int vertShader, fragShader, shaderProgram, objectMatrix, cameraMatrix, transparency;
-
-    public void bind(){
-        GL20.glUseProgram(shaderProgram);
-    }
-
-    public void unbind(){
-        GL20.glUseProgram(0);
-    }
+public class Shader extends AbstractShader{
+    private int objectMatrix, cameraMatrix, transparency;
 
     public int getObjectMatrixLocation() {
         return objectMatrix;
@@ -74,33 +66,4 @@ public class Shader {
         GL20.glUseProgram(0);
     }
 
-    private static String fileToString(String path) {
-        try (
-                InputStreamReader reader = new InputStreamReader(Shader.class.getResourceAsStream(path))
-        ) {
-            StringBuilder builder = new StringBuilder();
-
-            char read;
-            try {
-                while ((read = (char) reader.read()) != (char) -1) {
-                    builder.append(read);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            reader.close();
-            return builder.toString();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public void destroy(){
-        GL20.glDeleteShader(vertShader);
-        GL20.glDeleteShader(fragShader);
-        GL20.glDeleteProgram(shaderProgram);
-    }
 }
