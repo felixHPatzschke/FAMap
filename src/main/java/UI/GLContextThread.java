@@ -244,12 +244,12 @@ public class GLContextThread extends Thread {
 
             glfwSwapBuffers(window);
 
-            //if (input) {
+            if (input) {
                 glfwPollEvents();
-            //    input = false;
-            //} else {
-            //    glfwWaitEvents();
-            //}
+                input = false;
+            } else {
+                glfwWaitEvents();
+            }
             if (map != null) {
                 if (map.isLoaded()) {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName()+" FPS: "+(1000000000/(System.nanoTime()-time)));
