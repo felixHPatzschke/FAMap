@@ -15,7 +15,6 @@ public class MapShader extends AbstractShader{
     /** Fragment shader macros */
     public static final int FRAG_NONE = 0, FRAG_DEFAULT = 1, FRAG_HEIGHT_LEVEL = 2, FRAG_TOOL_BLOB = 4;
 
-
     public MapShader()
     {
         int status;
