@@ -13,6 +13,10 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import static OpenGL.MapShader.FRAG_DEFAULT;
+import static OpenGL.MapShader.FRAG_HEIGHT_LEVEL;
+import static OpenGL.MapShader.FRAG_TOOL_BLOB;
+
 /**
  * Created by Basti on 31.01.2016.
  */
@@ -30,6 +34,10 @@ public class RenderableMap extends Renderable {
         //eyeX=-90;
     }
 
+    public int getFragEnum(){
+        return FRAG_HEIGHT_LEVEL | FRAG_TOOL_BLOB;
+    }
+
     public void rescanHeight() {
         minHeight = Integer.MAX_VALUE;
         maxHeight = Integer.MIN_VALUE;
@@ -38,11 +46,19 @@ public class RenderableMap extends Renderable {
                 if (tiles[x][y].getMinHeight() < minHeight) {
                     minHeight = tiles[x][y].getMinHeight();
                 }
-                if (tiles[x][y].getMaxHeight() < maxHeight) {
+                if (tiles[x][y].getMaxHeight() > maxHeight) {
                     maxHeight = tiles[x][y].getMaxHeight();
                 }
             }
         }
+    }
+
+    public int getMinHeight() {
+        return minHeight;
+    }
+
+    public int getMaxHeight() {
+        return maxHeight;
     }
 
     public void setMapRenderer(MapRenderer mapRenderer) {

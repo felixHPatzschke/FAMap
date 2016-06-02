@@ -21,7 +21,6 @@ uniform float transp;
 
 vec4 default_color()
 {
-    //float h = (ms_z-h_min)/(h_max-h_min);
     return vec4(Color, transp);
 }
 
@@ -39,10 +38,7 @@ vec4 tool_blob_color(vec4 prev_col)
 vec4 height_level_color(vec4 prev_col)
 {
     float h = (ms_z-h_min)/(h_max-h_min);
-    if(int(h*32)%32 == 0 && transp == 1.0)
-        return vec4(1.0, 0.0, 0.0, 1.0);
-    else
-        return prev_col;
+    return vec4(h, h, h, 1.0);
 }
 
 void main() {

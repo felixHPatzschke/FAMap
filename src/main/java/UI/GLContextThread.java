@@ -207,7 +207,7 @@ public class GLContextThread extends Thread {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             //shader.bind();
             mapShader.bind();
-            GL20.glUniform1i(mapShader.getFragEnumLocation(), FRAG_DEFAULT | FRAG_HEIGHT_LEVEL | FRAG_TOOL_BLOB);
+
             GL20.glUniform1f(mapShader.getToolXLocation(), toolPosX);
             GL20.glUniform1f(mapShader.getToolYLocation(), toolPosY);
             GL20.glUniform1f(mapShader.getToolRSQRLocation(), 8.0f);
@@ -232,15 +232,18 @@ public class GLContextThread extends Thread {
 
             camera.applyMatrix(mapShader);
 
+            System.out.println(renderableMap.getMinHeight()+" "+renderableMap.getMaxHeight());
+            GL20.glUniform1f(mapShader.getHminLocation(),renderableMap.getMinHeight());
+            GL20.glUniform1f(mapShader.getHmaxLocation(),renderableMap.getMaxHeight());
+
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
+                GL20.glUniform1i(mapShader.getFragEnumLocation(), r.getFragEnum());
                 r.applyMatrix(mapShader);
                 GL20.glUniform1f(mapShader.getTransparencyLocation(), r.getTransparency());
                 r.render(camera);
             });
 
             mapShader.unbind();
-
-
 
             glfwSwapBuffers(window);
 
