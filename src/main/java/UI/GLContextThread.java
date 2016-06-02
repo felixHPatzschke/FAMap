@@ -102,8 +102,8 @@ public class GLContextThread extends Thread {
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        // Enable v-sync
-        glfwSwapInterval(1);
+        // VSYNC BROKEN ON WANGBLOWS, CALLING LEADS TO LOWER FPS!
+        //glfwSwapInterval(1);
         // Make the window visible
         glfwShowWindow(window);
     }
@@ -199,6 +199,9 @@ public class GLContextThread extends Thread {
 
         long time;
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+            mouseMovement();
+            keyboardInput();
+
             time=System.nanoTime();
             checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
@@ -236,22 +239,21 @@ public class GLContextThread extends Thread {
             });
 
             mapShader.unbind();
+
+
+
             glfwSwapBuffers(window);
 
+            //if (input) {
+                glfwPollEvents();
+            //    input = false;
+            //} else {
+            //    glfwWaitEvents();
+            //}
             if (map != null) {
                 if (map.isLoaded()) {
                     glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName()+" FPS: "+(1000000000/(System.nanoTime()-time)));
                 }
-            }
-
-            mouseMovement();
-            keyboardInput();
-
-            if (input) {
-                glfwPollEvents();
-                input = false;
-            } else {
-                glfwWaitEvents();
             }
         }
     }
