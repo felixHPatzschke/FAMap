@@ -13,9 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import static OpenGL.MapShader.FRAG_DEFAULT;
-import static OpenGL.MapShader.FRAG_HEIGHT_LEVEL;
-import static OpenGL.MapShader.FRAG_TOOL_BLOB;
+import static OpenGL.MapShader.*;
 
 /**
  * Created by Basti on 31.01.2016.
@@ -35,7 +33,7 @@ public class RenderableMap extends Renderable {
     }
 
     public int getFragEnum(){
-        return FRAG_HEIGHT_LEVEL | FRAG_TOOL_BLOB;
+        return FRAG_HEIGHTMAP | FRAG_HEIGHT_LEVEL_LINES | FRAG_TOOL_BLOB;
     }
 
     public void rescanHeight() {

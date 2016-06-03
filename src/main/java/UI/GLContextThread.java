@@ -125,7 +125,7 @@ public class GLContextThread extends Thread {
         shader = new Shader("simple");
         mapShader = new MapShader();
         // Set the clear color
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glLineWidth(3.0f);
         glEnable(GL43.GL_DEBUG_OUTPUT);
         glEnable(GL_DEPTH_TEST);
@@ -210,7 +210,7 @@ public class GLContextThread extends Thread {
 
             GL20.glUniform1f(mapShader.getToolXLocation(), toolPosX);
             GL20.glUniform1f(mapShader.getToolYLocation(), toolPosY);
-            GL20.glUniform1f(mapShader.getToolRSQRLocation(), 8.0f);
+            GL20.glUniform1f(mapShader.getToolRSQRLocation(), 16.0f);
             GL20.glUniform1f(mapShader.getHminLocation(), 0.0f);
             GL20.glUniform1f(mapShader.getHmaxLocation(), 1000.0f);
             GL20.glUniform1f(mapShader.getTransparencyLocation(), 0.5f);
@@ -232,9 +232,9 @@ public class GLContextThread extends Thread {
 
             camera.applyMatrix(mapShader);
 
-            System.out.println(renderableMap.getMinHeight()+" "+renderableMap.getMaxHeight());
-            GL20.glUniform1f(mapShader.getHminLocation(),renderableMap.getMinHeight());
-            GL20.glUniform1f(mapShader.getHmaxLocation(),renderableMap.getMaxHeight());
+            //System.out.println(renderableMap.getMinHeight()+" "+renderableMap.getMaxHeight());
+            GL20.glUniform1f(mapShader.getHminLocation(), renderableMap.getMinHeight());
+            GL20.glUniform1f(mapShader.getHmaxLocation(), renderableMap.getMaxHeight());
 
             renderablesList.stream().filter(Renderable::isRenderable).forEach(r -> {
                 GL20.glUniform1i(mapShader.getFragEnumLocation(), r.getFragEnum());

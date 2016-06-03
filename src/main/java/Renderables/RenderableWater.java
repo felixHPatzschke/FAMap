@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import static OpenGL.MapShader.*;
+
 /**
  * Created by Basti on 28.05.2016.
  */
@@ -92,6 +94,11 @@ public class RenderableWater extends Renderable {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
         GL30.glBindVertexArray(0);
+    }
+
+    public int getFragEnum()
+    {
+        return FRAG_WATER;
     }
 
     public void setWaterShader(FAMap map) {

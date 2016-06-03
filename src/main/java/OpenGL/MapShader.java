@@ -6,14 +6,19 @@ import static org.lwjgl.opengl.GL20.*;
 /**
  * Created by Felix Patzschke on 01.06.2016.
  */
-public class MapShader extends AbstractShader{
+public class MapShader extends AbstractShader implements Camera4SupportingShader{
 
     /** Vertex shader uniforms */
     private int objectMatrix, cameraMatrix;
     /** Fragment shader uniforms */
     private int fragEnum, toolx, tooly, toolrsq, hmin, hmax, transparency;
     /** Fragment shader macros */
-    public static final int FRAG_NONE = 0, FRAG_DEFAULT = 1, FRAG_HEIGHT_LEVEL = 2, FRAG_TOOL_BLOB = 4;
+    public static final int FRAG_NONE = 0;
+    public static final int FRAG_DEFAULT = 1;
+    public static final int FRAG_HEIGHTMAP = 2;
+    public static final int FRAG_WATER = 4;
+    public static final int FRAG_HEIGHT_LEVEL_LINES = 8;
+    public static final int FRAG_TOOL_BLOB = 16;
 
     public MapShader()
     {
@@ -59,6 +64,7 @@ public class MapShader extends AbstractShader{
         return objectMatrix;
     }
 
+    @Override
     public int getCameraMatrixLocation() {
         return cameraMatrix;
     }

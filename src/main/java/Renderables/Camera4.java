@@ -1,5 +1,6 @@
 package Renderables;
 
+import OpenGL.Camera4SupportingShader;
 import OpenGL.MapShader;
 import OpenGL.Shader;
 import org.joml.Matrix4f;
@@ -73,11 +74,7 @@ public class Camera4 {
         return matrix;
     }
 
-    public void applyMatrix(Shader s) {
-        GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(), false, getMatrix().get(BufferUtils.createFloatBuffer(16)));
-    }
-
-    public void applyMatrix(MapShader s) {
+    public void applyMatrix(Camera4SupportingShader s) {
         GL20.glUniformMatrix4fv(s.getCameraMatrixLocation(), false, getMatrix().get(BufferUtils.createFloatBuffer(16)));
     }
 
