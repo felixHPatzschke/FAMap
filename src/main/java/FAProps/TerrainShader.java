@@ -16,7 +16,7 @@ import static UI.Logger.logOut;
  *
  * @author bhofmann
  */
-public class TerrainShader {
+public class TerrainShader implements Storeable{
 
     private String terrainShader, texPathBackground, textPathSkyCubemap;
     private String[][] texPathEnvCubemap;
@@ -55,5 +55,29 @@ public class TerrainShader {
         fogColor = map.getVector3();
         fogMin = map.getFloat();
         fogMax = map.getFloat();
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeString(terrainShader,false);
+        writer.writeString(texPathBackground,false);
+        writer.writeString(textPathSkyCubemap,false);
+        writer.writeInt32(texPathEnvCubemap.length);
+        int i = 0;
+        while (i < texPathEnvCubemap.length) {
+            writer.writeString(texPathEnvCubemap[i][0],false);
+            writer.writeString(texPathEnvCubemap[i][1],false);
+            i++;
+        }
+        writer.writeFloat(lightingMultiplier);
+        writer.writeVector3f(sunDirection);
+        writer.writeVector3f(sunAmbience);
+        writer.writeVector3f(sunColor);
+        writer.writeVector3f(shadowFillColor);
+        writer.writeVector4f(specularColor);
+        writer.writeFloat(bloom);
+        writer.writeVector3f(fogColor);
+        writer.writeFloat(fogMin);
+        writer.writeFloat(fogMax);
     }
 }

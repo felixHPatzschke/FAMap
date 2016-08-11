@@ -23,7 +23,7 @@ public abstract class AbstractShader {
         glUseProgram(0);
     }
 
-    protected static final String fileToString(String path) {
+    protected static String fileToString(String path) {
         try (
                 InputStreamReader reader = new InputStreamReader(Shader.class.getResourceAsStream(path))
         ) {

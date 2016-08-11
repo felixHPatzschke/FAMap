@@ -14,51 +14,35 @@ import static UI.Logger.logOut;
 /**
  * @author bhofmann
  */
-public class Texturemap {
+public class Texturemap implements Storeable {
 
-    private MapColor[][] texturemap1, texturemap2;
-    private int sidelen;
+    byte[] texturemap1, texturemap2;
 
     public Texturemap(MapReader map, int version) throws IOException {
-        int length = map.getInt32() - 128;
-        logOut("Texturemap: " + length);
-        sidelen = (int) Math.sqrt(length);
-
-        texturemap1 = new MapColor[sidelen][sidelen];
-        map.skip(128);
-
-        for (int y = 0; y < sidelen; y++) {
-            for (int x = 0; x < sidelen; x++) {
-                texturemap1[x][y] = new MapColor(map.getChar());
-            }
-        }
-
+        texturemap1 = map.readRaw(map.getInt32());
         if (version >= 56) {
-            length = map.getInt32() - 128;
-            sidelen = (int) Math.sqrt(length);
-            texturemap2 = new MapColor[sidelen][sidelen];
-            for (int y = 0; y < sidelen; y++) {
-                for (int x = 0; x < sidelen; x++) {
-                    texturemap2[x][y] = new MapColor(map.getChar());
-                }
-            }
-            map.skip(128);
+            texturemap2 = map.readRaw(map.getInt32());
         }
     }
 
-    public MapColor[][] getTexturemap1() {
+    public byte[] getTexturemap1() {
         return texturemap1;
     }
 
-    public boolean hasTexturemap2(){
-        return texturemap2!=null;
+    public boolean hasTexturemap2() {
+        return texturemap2 != null;
     }
 
-    public MapColor[][] getTexturemap2() {
+    public byte[] getTexturemap2() {
         return texturemap2;
     }
 
-    public int getSidelen() {
-        return sidelen;
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeInt32(texturemap1.length);
+        writer.writeRaw(texturemap1);
+
+        writer.writeInt32(texturemap2.length);
+        writer.writeRaw(texturemap2);
     }
 }

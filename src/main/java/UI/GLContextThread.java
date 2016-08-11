@@ -3,10 +3,13 @@ package UI;
 import FAProps.FAMap;
 import MapRenderers.HeightmapRenderer;
 import MapRenderers.MapRenderer;
-import MapRenderers.TexturemapRenderer;
 import OpenGL.MapShader;
 import OpenGL.Shader;
 import Renderables.*;
+import Tools.HeightTool;
+import Tools.MapChangeHandler;
+import Tools.SymmetryHandler;
+import Tools.Tool;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -15,18 +18,15 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
-import java.awt.*;
 import java.io.InputStream;
 import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-
-import static OpenGL.MapShader.*;
 
 import static UI.Logger.logOut;
 import static UI.Logger.logErr;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GLXEXTSwapControl.glXSwapIntervalEXT;
 import static org.lwjgl.system.MemoryUtil.*;
 
 /**
@@ -44,17 +44,17 @@ public class GLContextThread extends Thread {
     private String mapName;
 
     private long window;
+    private DebugView debugView = new DebugViewImpl();
 
     private Shader shader;
     private MapShader mapShader;
     private FAMap map;
     private MapRenderer mapRenderer = new HeightmapRenderer();
-    //private Camera camera = new Camera();
-    //private Camera2 camera = new Camera2(0, 0, 4, 0, 0, 0, 0, 1, 0, 45.0f, 300, 300);
-    private Camera4 camera = new Camera4();
-    private RenderableMap renderableMap;
-    private RenderableWater renderableWater;
+    private Camera camera = new Camera();
     private ArrayList<Renderable> renderablesList = new ArrayList<>();
+    private RenderableMap renderableMap;
+
+    private SymmetryHandler symmetryHandler = new SymmetryHandler();
 
     private int height, width;
     private boolean resized, input = true, mouseLocked = false, focused = true;
@@ -63,6 +63,7 @@ public class GLContextThread extends Thread {
 
 
     private void init() {
+        symmetryHandler.setTool(new HeightTool());
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         try {
@@ -115,23 +116,32 @@ public class GLContextThread extends Thread {
         }
     }
 
+    public void init3d(){
+        mapShader.bind();
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glLineWidth(3.0f);
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_LIGHTING);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        camera.applyMatrix(mapShader);
+    }
+
     private void loop() throws Exception {
         GL.createCapabilities();
-        renderableMap=new RenderableMap();
-        renderableWater=new RenderableWater();
+
+        renderableMap = new RenderableMap();
+        RenderableWater renderableWater = new RenderableWater();
 
         renderablesList.add(renderableMap);
         renderablesList.add(renderableWater);
         shader = new Shader("simple");
         mapShader = new MapShader();
         // Set the clear color
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glLineWidth(3.0f);
-        glEnable(GL43.GL_DEBUG_OUTPUT);
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        shader.bind();
+
+        init3d();
+
         renderablesList.add(new CoordSystem());
         renderablesList.add(new PlainSystem());
 
@@ -155,25 +165,11 @@ public class GLContextThread extends Thread {
             }
         });
         glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback() {
-
             @Override
             public void invoke(long window, double xoffset, double yoffset) {
-                float speed = 1f;
-
-                yoffset *= -1;
-
-                if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-                    speed *= (1 / map.getMapDetails().getHeightmapScale());
-                }
-                if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-                    speed /= (1 / map.getMapDetails().getHeightmapScale());
-                }
-                //camera.setTranslationZ((float) (camera.getTranslationZ() + yoffset * speed));
-                //camera.setFoV(camera.getFoV() + (float)(yoffset*speed));    // Dirty hack
-                camera.zoom(yoffset);
+                camera.zoom(yoffset * -1);
             }
         });
-        shader.unbind();
 
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
@@ -187,6 +183,9 @@ public class GLContextThread extends Thread {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
                     }
                 }
+                if (key == GLFW_KEY_F3 && action == GLFW_RELEASE) {
+                    debugView.toggleDisplay();
+                }
             }
         });
         glfwSetWindowFocusCallback(window, windowFocusCallback = new GLFWWindowFocusCallback() {
@@ -197,16 +196,15 @@ public class GLContextThread extends Thread {
         });
         checkError();
 
-        long time;
+        debugView.setContext(this);
+
         while (glfwWindowShouldClose(window) == GLFW_FALSE) {
+            debugView.beforeRender();
             mouseMovement();
             keyboardInput();
 
-            time=System.nanoTime();
             checkError();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            //shader.bind();
-            mapShader.bind();
 
             GL20.glUniform1f(mapShader.getToolXLocation(), toolPosX);
             GL20.glUniform1f(mapShader.getToolYLocation(), toolPosY);
@@ -232,7 +230,6 @@ public class GLContextThread extends Thread {
 
             camera.applyMatrix(mapShader);
 
-            //System.out.println(renderableMap.getMinHeight()+" "+renderableMap.getMaxHeight());
             GL20.glUniform1f(mapShader.getHminLocation(), renderableMap.getMinHeight());
             GL20.glUniform1f(mapShader.getHmaxLocation(), renderableMap.getMaxHeight());
 
@@ -242,10 +239,11 @@ public class GLContextThread extends Thread {
                 GL20.glUniform1f(mapShader.getTransparencyLocation(), r.getTransparency());
                 r.render(camera);
             });
-
-            mapShader.unbind();
-
+            
             glfwSwapBuffers(window);
+
+            debugView.afterRender();
+            debugView.render();
 
             if (input) {
                 glfwPollEvents();
@@ -253,11 +251,7 @@ public class GLContextThread extends Thread {
             } else {
                 glfwWaitEvents();
             }
-            if (map != null) {
-                if (map.isLoaded()) {
-                    glfwSetWindowTitle(window, "FAM - " + map.getMapDetails().getName()+" FPS: "+(1000000000/(System.nanoTime()-time)));
-                }
-            }
+
         }
     }
 
@@ -289,7 +283,22 @@ public class GLContextThread extends Thread {
                     //}
                 } else {
                     //TODO Add ray casting and tool code here
-                    do_mouse_to_worldspace_stuff();
+                    calculateToolPosition();
+                }
+            }
+            if(map!=null) {
+                boolean
+                        left=glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS,
+                        middle=glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS,
+                        right=glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+                if(left||middle||right) {
+                    MapChangeHandler handler = symmetryHandler.applyTool(map,
+                            left,
+                            middle,
+                            right,
+                            new Vector2f(toolPosX, toolPosY));
+                    handler.applyChanges(renderableMap);
+                    input=true;
                 }
             }
         }
@@ -319,17 +328,10 @@ public class GLContextThread extends Thread {
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
             transl.y -= speed;
         }
-        if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
-            //camera.setTranslationZ(camera.getTranslationZ() - (speed * 10));
-            //camera.translateForward(speed);
-        }
-        if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
-            //camera.setTranslationZ(camera.getTranslationZ() + (speed * 10));
-            //camera.translateForward(-speed);
-        }
         if (transl.x != 0 || transl.y != 0) {
             input = true;
             camera.moveBy(transl);
+            calculateToolPosition();
         }
         if (map != null) {
             Vector3f pos = camera.getPos();
@@ -369,25 +371,20 @@ public class GLContextThread extends Thread {
         glfwTerminate();
     }
 
-    public void do_mouse_to_worldspace_stuff()
+    public void calculateToolPosition()
     {
         float x = 2*((float)oldMouse.x/(float)Settings.glfw_window_width)-1;
         float y = -2*((float)oldMouse.y/(float)Settings.glfw_window_height)+1;
-        //FloatBuffer z_buf = BufferUtils.createFloatBuffer(4);
-        //glReadPixels((int)oldMouse.x, (int)oldMouse.y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, z_buf);
-        //z_buf.rewind();
 
         Vector4f near = camera.clipspaceToWorldspace(x, y, 0.0f);
         Vector4f far = camera.clipspaceToWorldspace(x, y, 1.0f);
         Vector4f l = new Vector4f();
         far.sub(near, l);
         float znear = near.z;
-        //float zfar = far.z;
         float zl = l.z;
         Vector4f pos = new Vector4f();
         l.mul(znear/zl);
         near.sub(l, pos);
-        //logOut("Pos: " + pos);
         toolPosX = pos.x;
         toolPosY = pos.y;
     }

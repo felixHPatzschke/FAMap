@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author bhofmann
  */
-public class WaterShader {
+public class WaterShader implements Storeable{
 
     private boolean hasWater;
     private float waterElevation, waterElevationDeep, waterElevationAbyss;
@@ -59,5 +59,28 @@ public class WaterShader {
 
     public void setWaterElevation(int waterElevation) {
         this.waterElevation = waterElevation;
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeChar(hasWater?(char)1:(char)0);
+        writer.writeFloat(waterElevation);
+        writer.writeFloat(waterElevationDeep);
+        writer.writeFloat(waterElevationAbyss);
+
+        int i = 0;
+        while (i < 20) {
+            writer.writeFloat(unknown1[i]);
+            i++;
+        }
+
+        writer.writeString(texPathWaterCubemap,false);
+        writer.writeString(texPathWaterRamp,false);
+
+        i = 0;
+        while (i < 4) {
+            writer.writeFloat(unknown2[i]);
+            i++;
+        }
     }
 }

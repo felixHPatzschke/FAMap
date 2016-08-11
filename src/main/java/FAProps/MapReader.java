@@ -5,10 +5,12 @@
  */
 package FAProps;
 
+import UI.Logger;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.*;
+import java.util.Arrays;
 
 /**
  *
@@ -31,11 +33,15 @@ public class MapReader implements AutoCloseable{
         return version;
     }
 
-    public void skip(long amount) throws IOException {
-        long skipped=0;
-        while(skipped!=amount){
-            skipped=skipped+map.skip(amount-skipped);
+    @Deprecated
+    public void skip(int amount) throws IOException {
+        int[] read = new int[amount];
+        int skipped=0;
+        while (skipped<amount){
+            read[skipped]=map.read();
+            skipped++;
         }
+        Logger.logOut(Arrays.toString(read));
     }
 
     public int getInt16() throws IOException {
@@ -83,6 +89,16 @@ public class MapReader implements AutoCloseable{
 
     public Vector4f getVector4() throws IOException {
         return new Vector4f(this.getFloat(), this.getFloat(), this.getFloat(), this.getFloat());
+    }
+
+    public byte[] readRaw(int count) throws IOException {
+        byte[] out = new byte[count];
+        int i=0;
+        while (i<count) {
+            out[i]=(byte)map.read();
+            i++;
+        }
+        return out;
     }
 
     @Override

@@ -5,6 +5,8 @@
  */
 package FAProps;
 
+import UI.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class FAMap {
     private ArrayDeque<WaveGenerator> waveGenerators = new ArrayDeque();
     private ArrayDeque<Decal> decals = new ArrayDeque();
     private ArrayDeque<DecalGroup> decalGroups = new ArrayDeque();
-    private Layer[] layers = new Layer[11];
+    private Layers layers;
     private Normalmap[] normalmap;
     private Texturemap texturemap;
     private TerrainShader terrainShader;
@@ -69,51 +71,7 @@ public class FAMap {
                 }
                 i = 0;
 
-                if (mapDetails.getVersion() < 56) {
-                    logOut("Tileset: " + reader.getString());
-                    while (i <= 4) {
-                        layers[i] = new Layer(reader, false);
-                        i++;
-                    }
-                    while (i <= 8) {
-                        layers[i] = new Layer();
-                        i++;
-                    }
-                    layers[i] = new Layer(reader, false);
-                } else {
-
-                    // <editor-fold defaultstate="collapsed" desc="UNKNOWN SECTION!">
-                    count = reader.getInt32();
-                    reader.skip(count);
-                    // </editor-fold>
-
-                    if (mapDetails.getVersion() == 56) {
-                        reader.skip(24); //No one will ever know!
-                        i = 0;
-                        while (i <= 9) {
-                            layers[i] = new Layer(reader, true);
-                            i++;
-                        }
-                        i = 0;
-                        while (i <= 8) {
-                            layers[i].loadNormalmap(reader);
-                            i++;
-                        }
-                    } else {
-                        i = 0;
-                        while (i < 11) {
-                            if (i == 5) {
-                                reader.skip(20); //I swear i don't know!
-                            }
-                            if (i < 6) {
-                                layers[i] = new Layer(reader, true);
-                            } else {
-                                layers[i - 6].loadNormalmap(reader);
-                            }
-                            i++;
-                        }
-                    }
-                }
+                layers = new Layers(reader,mapDetails);
 
                 if (mapDetails.getVersion() == 60) {
                     reader.skip(8 + 12 + 8); //It's getting obvious...

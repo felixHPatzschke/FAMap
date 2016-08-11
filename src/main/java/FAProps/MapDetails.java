@@ -13,18 +13,20 @@ import static UI.Logger.logOut;
 /**
  * @author bhofmann
  */
-public class MapDetails {
+public class MapDetails implements Storeable{
 
     private int previewSize, width, height, version;
     private float heightmapScale;
     private int[][] heightmap;
     private String name;
+    private byte[] preview;
+    private byte unknownEnd;
 
     public MapDetails(String name, MapReader map) throws IOException {
         this.name = name;
         previewSize = map.getInt32();
         logOut("Preview Size    : " + previewSize);
-        map.skip(previewSize);
+        preview=map.readRaw(previewSize);
         version = map.getInt32();
         map.setVersion(version);
         logOut("Map Version     : " + version);
@@ -48,7 +50,7 @@ public class MapDetails {
         }
         logOut("---------");
         if (map.getVersion() > 53) {
-            map.skip(1);
+            unknownEnd=map.readRaw(1)[0];
         }
     }
 
@@ -78,5 +80,26 @@ public class MapDetails {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeInt32(previewSize);             //TODO: Generate good preview
+        writer.writeRaw(preview);
+
+        writer.writeInt32(56);                      //Enforces Version 56
+        writer.writeInt32(width);
+        writer.writeInt32(height);
+        writer.writeFloat(heightmapScale);
+        int j,i = 0;
+        while (i < width + 1) {
+            j = 0;
+            while (j < height + 1) {
+                writer.writeInt16(heightmap[i][j]); //TODO: Convert Heightmap to short
+                j++;
+            }
+            i++;
+        }
+        writer.writeRaw(new byte[]{unknownEnd});                 //TODO: Find actual value
     }
 }

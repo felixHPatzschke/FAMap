@@ -10,26 +10,26 @@ import org.joml.Vector3f;
 import java.io.IOException;
 
 /**
- *
  * @author Basti_Temp
  */
-public class Decal {
+public class Decal implements Storeable {
 
-    private int type, ownerArmy;
-    private String[] texPathes;
+    private int type, ownerArmy, unknownHeader;
+    private String[] texPaths;
     private Vector3f scale, position, rotation;
     private float cutOffLOD, nearCutOffLOD;
 
     public Decal(MapReader map) throws IOException {
-        map.skip(4); //Not again!
+        unknownHeader=map.getInt32();
         type = map.getInt32();
-        int length, textureCount = map.getInt32();
 
+        int length, textureCount = map.getInt32();
         int i = 0;
-        texPathes = new String[textureCount];
+
+        texPaths = new String[textureCount];
         while (i < textureCount) {
             length = map.getInt32();
-            texPathes[i] = map.getString(length);
+            texPaths[i] = map.getString(length);
             i++;
         }
 
@@ -39,5 +39,23 @@ public class Decal {
         cutOffLOD = map.getFloat();
         nearCutOffLOD = map.getFloat();
         ownerArmy = map.getInt32();
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeInt32(unknownHeader);
+        writer.writeInt32(type);
+        writer.writeInt32(texPaths.length);
+        int i = 0;
+        while (i < texPaths.length) {
+            writer.writeString(texPaths[i],true);
+            i++;
+        }
+        writer.writeVector3f(scale);
+        writer.writeVector3f(position);
+        writer.writeVector3f(rotation);
+        writer.writeFloat(cutOffLOD);
+        writer.writeFloat(nearCutOffLOD);
+        writer.writeInt32(ownerArmy);
     }
 }

@@ -11,7 +11,7 @@ import java.io.IOException;
  *
  * @author Basti_Temp
  */
-public class WaveTexture {
+public class WaveTexture implements Storeable{
 
     private float scaleX, scaleY;
     private String texturePath;
@@ -20,5 +20,12 @@ public class WaveTexture {
         scaleX = map.getFloat();
         scaleY = map.getFloat();
         texturePath = map.getString();
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeFloat(scaleX);
+        writer.writeFloat(scaleY);
+        writer.writeString(texturePath,false);
     }
 }

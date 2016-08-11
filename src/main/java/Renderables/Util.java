@@ -28,7 +28,7 @@ public abstract class Util {
      * @param v vector to be normalized
      * @return normalized vector
      */
-    public static final float[] normalizef(float[] v)
+    public static float[] normalizef(float[] v)
     {
         float r = (float) Math.sqrt( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] );
 
@@ -46,7 +46,7 @@ public abstract class Util {
         return v;
     }
 
-    public static final Matrix3d rotationMatrix(Vector3d v, double angle)
+    public static Matrix3d rotationMatrix(Vector3d v, double angle)
     {
         double sin = Math.sin(angle);
         double cos = Math.cos(angle);
@@ -65,7 +65,7 @@ public abstract class Util {
      * @param b second operand
      * @param res matrix
      */
-    public static final void crossf(float[] a, float[] b, float[] res)
+    public static void crossf(float[] a, float[] b, float[] res)
     {
         res[0] = a[1]*b[2] - a[2]*b[1];
         res[1] = a[2]*b[0] - a[0]*b[2];
@@ -78,7 +78,7 @@ public abstract class Util {
      * @param axis normalized axis vector
      * @param angle angle
      */
-    public static final void rotate(float[] vec, float[] axis, float angle)
+    public static void rotate(float[] vec, float[] axis, float angle)
     {
         float sin = (float)Math.sin((double) angle);
         float cos = (float)Math.cos((double) angle);

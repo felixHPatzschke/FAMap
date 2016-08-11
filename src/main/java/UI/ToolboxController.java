@@ -9,6 +9,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,12 +35,7 @@ public class ToolboxController {
 
     @FXML
     public void initialize(){
-        toolList.setCellFactory(new Callback<ListView<Tool>, ListCell<Tool>>() {
-            @Override
-            public ListCell<Tool> call(ListView<Tool> param) {
-                return new ToolCell();
-            }
-        });
+        toolList.setCellFactory(param -> new ToolCell());
         toolList.getItems().add(new HeightTool());
         GLContextThread = new GLContextThread();
         GLContextThread.start();
@@ -46,12 +43,23 @@ public class ToolboxController {
 
     @FXML
     public void loadMap(){
-        FileChooser fc = new FileChooser();
-        if(Files.isDirectory(Paths.get(Settings.path))) {
-            fc.setInitialDirectory(new File(Settings.path));
+        File f;
+        // #JavafxIsBrokenOnLinux
+        if(OS.WINDOWS) {
+            FileChooser fc = new FileChooser();
+            if (Files.isDirectory(Paths.get(Settings.path))) {
+                fc.setInitialDirectory(new File(Settings.path));
+            }
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("SupCom-Map", "*.scmap"));
+            f = fc.showOpenDialog(stage);
+        }else{
+            JFileChooser fc = new JFileChooser(new File(Settings.path));
+            fc.setFileFilter(new FileNameExtensionFilter("SupCom-Map","scmap"));
+            if(fc.showOpenDialog(null)!=JFileChooser.APPROVE_OPTION){
+                return;
+            }
+            f = fc.getSelectedFile();
         }
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("SupCom-Map","*.scmap"));
-        File f = fc.showOpenDialog(stage);
         if(f!=null) {
             Settings.path = f.getParent();
             try {

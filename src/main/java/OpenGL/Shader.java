@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL20.glBindAttribLocation;
 /**
  * Created by bhofmann on 23.09.2015.
  */
-public class Shader extends AbstractShader{
+public class Shader extends AbstractShader implements Camera4SupportingShader {
     private int objectMatrix, cameraMatrix, transparency;
 
     public int getObjectMatrixLocation() {

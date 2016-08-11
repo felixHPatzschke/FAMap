@@ -1,17 +1,10 @@
 package Renderables;
 
 import FAProps.FAMap;
-import FAProps.WaterShader;
 import MapRenderers.MapRenderer;
 import OpenGL.Tile;
-import UI.GLContextThread;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 import static OpenGL.MapShader.*;
 
@@ -30,6 +23,11 @@ public class RenderableMap extends Renderable {
 
     public RenderableMap() {
         //eyeX=-90;
+    }
+
+    public void clearTile(int x,int y){
+        tiles[x][y].delete();
+        tiles[x][y]=null;
     }
 
     public int getFragEnum(){
@@ -86,7 +84,7 @@ public class RenderableMap extends Renderable {
     }
 
     @Override
-    public void render(Camera4 camera) {
+    public void render(Camera camera) {
         if (tiles == null) {
             tiles = new Tile[map.getMapDetails().getWidth() / Tile.SIZE][map.getMapDetails().getHeight() / Tile.SIZE];
         }
@@ -95,7 +93,7 @@ public class RenderableMap extends Renderable {
         int centralTileY = (int) (-cameraPos.y / Tile.SIZE);
         for (int x = 0; x < map.getMapDetails().getWidth() / Tile.SIZE; x++) {
             for (int y = 0; y < map.getMapDetails().getHeight() / Tile.SIZE; y++) {
-                if (Math.pow(centralTileX - x, 2) <= visionRadius && Math.pow(centralTileY - y, 2) <= visionRadius) {
+                //if (Math.pow(centralTileX - x, 2) <= visionRadius && Math.pow(centralTileY - y, 2) <= visionRadius) {
                     if (tiles[x][y] == null) {
                         tiles[x][y] = new Tile(map, x, y);
                     }
@@ -107,7 +105,7 @@ public class RenderableMap extends Renderable {
                     GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, Tile.INDEX_BUFFER_SIZE, GL11.GL_UNSIGNED_SHORT, 0);
                     GL20.glDisableVertexAttribArray(0);
                     GL30.glBindVertexArray(0);
-                }
+                //}
             }
         }
     }

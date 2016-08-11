@@ -12,11 +12,8 @@ public class MapTest {
         Settings.init();
         Launcher.setNatives();
         GLContextThread lw = new GLContextThread();
-        lw.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                throw new RuntimeException(e);
-            }
+        lw.setUncaughtExceptionHandler((t, e) -> {
+            throw new RuntimeException(e);
         });
         lw.start();
         lw.loadMap(this.getClass().getResourceAsStream("/barrier_islands.scmap"),"barrier_islands");

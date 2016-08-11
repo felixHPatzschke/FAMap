@@ -11,38 +11,29 @@ import java.io.IOException;
  *
  * @author Basti_Temp
  */
-public class WaterDetails {
+public class WaterDetails implements Storeable{
 
-    public char[] watermapData, waterFoamMask, waterFlatnessMask, waterDepthBiasMask;
+    public byte[] watermapData, waterFoamMask, waterFlatnessMask, waterDepthBiasMask;
 
     public WaterDetails(MapReader map, MapDetails mapDetails) throws IOException {
-        int i = 0, length = map.getInt32();
-        watermapData = new char[length];
-        while (i < length) {
-            watermapData[i] = map.getChar();
-            i++;
-        }
+        int length = map.getInt32();
+
+        watermapData = map.readRaw(length);
+
         length = (mapDetails.getHeight() / 2) * (mapDetails.getWidth() / 2);
 
-        waterFoamMask = new char[length];
-        waterFlatnessMask = new char[length];
-        waterDepthBiasMask = new char[length];
+        waterFoamMask = map.readRaw(length);
+        waterFlatnessMask = map.readRaw(length);
+        waterDepthBiasMask = map.readRaw(length);
+    }
 
-        i = 0;
-        while (i < length) {
-            waterFoamMask[i] = map.getChar();
-            i++;
-        }
-        i = 0;
-        while (i < length) {
-            waterFlatnessMask[i] = map.getChar();
-            i++;
-        }
-        i = 0;
-        while (i < length) {
-            waterDepthBiasMask[i] = map.getChar();
-            i++;
-        }
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeInt32(watermapData.length);
 
+        writer.writeRaw(watermapData);
+        writer.writeRaw(waterFoamMask);
+        writer.writeRaw(waterFlatnessMask);
+        writer.writeRaw(waterDepthBiasMask);
     }
 }

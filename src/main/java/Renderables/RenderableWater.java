@@ -143,7 +143,7 @@ public class RenderableWater extends Renderable {
     }
 
     @Override
-    public void render(Camera4 camera) {
+    public void render(Camera camera) {
         GL30.glBindVertexArray(waterVao);
 
         GL20.glEnableVertexAttribArray(0);

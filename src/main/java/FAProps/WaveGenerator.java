@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Basti_Temp
  */
-public class WaveGenerator {
+public class WaveGenerator implements Storeable{
 
     private float rotation, lifetimeFirst, lifetimeSecond, periodFirst,
             periodSecond, scaleFirst, scaleSecond, frameCount, frameRateFirst,
@@ -40,5 +40,27 @@ public class WaveGenerator {
         frameRateFirst = map.getFloat();
         frameRateSecond = map.getFloat();
         stripCount = map.getFloat();
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeString(textureName,false);
+        writer.writeString(rampName,false);
+
+        writer.writeVector3f(position);
+        writer.writeFloat(rotation);
+        writer.writeVector3f(velocity);
+
+        writer.writeFloat(lifetimeFirst);
+        writer.writeFloat(lifetimeSecond);
+        writer.writeFloat(periodFirst);
+        writer.writeFloat(periodSecond);
+        writer.writeFloat(scaleFirst);
+        writer.writeFloat(scaleSecond);
+
+        writer.writeFloat(frameCount);
+        writer.writeFloat(frameRateFirst);
+        writer.writeFloat(frameRateSecond);
+        writer.writeFloat(stripCount);
     }
 }

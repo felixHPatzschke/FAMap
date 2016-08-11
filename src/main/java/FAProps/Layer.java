@@ -11,10 +11,11 @@ import java.io.IOException;
  *
  * @author Basti_Temp
  */
-public class Layer {
+public class Layer{
 
     private String pathTexture, pathNormalmap;
-    private float scaleTexture, scaleNormalmap;
+    private int scaleTexture;
+    private float scaleNormalmap;
 
     public Layer(MapReader map, boolean onlyTexture) throws IOException {
         pathTexture = map.getString();
@@ -32,11 +33,20 @@ public class Layer {
         pathNormalmap = "";
         scaleTexture = 1;
         scaleNormalmap = 1;
-
     }
 
     public void loadNormalmap(MapReader map) throws IOException {
         pathNormalmap = map.getString();
         scaleNormalmap = map.getFloat();
+    }
+
+    void writeTexture(MapWriter writer) throws IOException {
+        writer.writeString(pathTexture,false);
+        writer.writeInt32(scaleTexture);
+    }
+
+    void writeNormalmap(MapWriter writer) throws IOException {
+        writer.writeString(pathNormalmap,false);
+        writer.writeFloat(scaleNormalmap);
     }
 }

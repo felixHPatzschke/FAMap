@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Basti_Temp
  */
-public class Prop {
+public class Prop implements Storeable{
 
     private Vector3f position, rotationX, rotationY, rotationZ, scale;
     private String blueprintPath;
@@ -25,5 +25,15 @@ public class Prop {
         rotationY = map.getVector3();
         rotationZ = map.getVector3();
         scale = map.getVector3();
+    }
+
+    @Override
+    public void store(MapWriter writer) throws IOException {
+        writer.writeString(blueprintPath,false);
+        writer.writeVector3f(position);
+        writer.writeVector3f(rotationX);
+        writer.writeVector3f(rotationY);
+        writer.writeVector3f(rotationZ);
+        writer.writeVector3f(scale);
     }
 }

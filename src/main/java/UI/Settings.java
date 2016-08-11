@@ -19,7 +19,7 @@ public abstract class Settings {
     public static boolean logger_console_output, logger_file_output;
 
 
-    private static void importCONFIG() throws FileNotFoundException, IOException{
+    private static void importCONFIG() throws IOException{
 
         BufferedReader br = new BufferedReader(new FileReader("./settings.json"));
 

@@ -85,7 +85,7 @@ public class CoordSystem extends Renderable {
     }
 
     @Override
-    public void render(Camera4 camera) {
+    public void render(Camera camera) {
         GL30.glBindVertexArray(vao);
 
         GL20.glEnableVertexAttribArray(0);
