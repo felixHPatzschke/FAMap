@@ -28,6 +28,7 @@ uniform float h_min, h_max;
 uniform float transp;
 uniform vec3 u_campos;
 uniform vec3 lightpos = vec3(0.0, 0.0, 1000.0);
+uniform float fog_distance = 1000.0;
 
 const vec3 normal = vec3(0.0, 0.0, 1.0);
 vec3 campos;
@@ -79,7 +80,7 @@ vec4 fog_color(vec4 prev_col)
 {
     vec4 cdiff = vec4(1.0, 1.0, 1.0, 1.0) - prev_col;
     float xdiff = length(vec2(ws)-vec2(campos));
-    return prev_col+((0.000001*xdiff*xdiff)*cdiff);
+    return prev_col+(((xdiff*xdiff)/(fog_distance*fog_distance))*cdiff);
 }
 
 vec4 height_level_lines_color(vec4 prev_col)

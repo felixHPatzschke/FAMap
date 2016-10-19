@@ -216,6 +216,7 @@ public class GLContextThread extends Thread {
             FloatBuffer campos = BufferUtils.createFloatBuffer(3);
             camera.getPos().get(campos);
             GL20.glUniform3fv(mapShader.getCameraPositionLocation(), campos);
+            GL20.glUniform1f(mapShader.getFogDistanceLocation(), 1000.0f /*TODO: insert dynamically calculated fog distance*/);
 
             if (mapIs != null) {
                 renderableMap.remove();
