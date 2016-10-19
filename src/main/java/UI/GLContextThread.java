@@ -20,6 +20,7 @@ import org.lwjgl.opengl.*;
 
 import java.io.InputStream;
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static UI.Logger.logOut;
@@ -212,6 +213,9 @@ public class GLContextThread extends Thread {
             GL20.glUniform1f(mapShader.getHminLocation(), 0.0f);
             GL20.glUniform1f(mapShader.getHmaxLocation(), 1000.0f);
             GL20.glUniform1f(mapShader.getTransparencyLocation(), 0.5f);
+            FloatBuffer campos = BufferUtils.createFloatBuffer(3);
+            camera.getPos().get(campos);
+            GL20.glUniform3fv(mapShader.getCameraPositionLocation(), campos);
 
             if (mapIs != null) {
                 renderableMap.remove();

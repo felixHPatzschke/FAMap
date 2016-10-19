@@ -11,7 +11,7 @@ public class MapShader extends AbstractShader implements Camera4SupportingShader
     /** Vertex shader uniforms */
     private int objectMatrix, cameraMatrix;
     /** Fragment shader uniforms */
-    private int fragEnum, toolx, tooly, toolrsq, hmin, hmax, transparency;
+    private int fragEnum, toolx, tooly, toolrsq, hmin, hmax, transparency, campos, lightpos;
     /** Fragment shader macros */
     public static final int FRAG_NONE = 0;
     public static final int FRAG_DEFAULT = 1;
@@ -19,6 +19,8 @@ public class MapShader extends AbstractShader implements Camera4SupportingShader
     public static final int FRAG_WATER = 4;
     public static final int FRAG_HEIGHT_LEVEL_LINES = 8;
     public static final int FRAG_TOOL_BLOB = 16;
+    public static final int FRAG_FOG = 128;
+    public static final int FRAG_DYNAMICLIGHTING = 256;
 
     public MapShader()
     {
@@ -56,6 +58,8 @@ public class MapShader extends AbstractShader implements Camera4SupportingShader
         hmin = glGetUniformLocation(shaderProgram, "h_min");
         hmax = glGetUniformLocation(shaderProgram, "h_max");
         transparency = glGetUniformLocation(shaderProgram, "transp");
+        campos = glGetUniformLocation(shaderProgram, "u_campos");
+        lightpos = glGetUniformLocation(shaderProgram, "lightpos");
         glUseProgram(0);
     }
 
@@ -95,6 +99,14 @@ public class MapShader extends AbstractShader implements Camera4SupportingShader
 
     public int getTransparencyLocation() {
         return transparency;
+    }
+
+    public int getCameraPositionLocation() {
+        return campos;
+    }
+
+    public int getLightPositionLocation() {
+        return lightpos;
     }
 
 }

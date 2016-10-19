@@ -31,7 +31,7 @@ public class RenderableMap extends Renderable {
     }
 
     public int getFragEnum(){
-        return FRAG_HEIGHTMAP | FRAG_HEIGHT_LEVEL_LINES | FRAG_TOOL_BLOB;
+        return FRAG_HEIGHTMAP | FRAG_HEIGHT_LEVEL_LINES | FRAG_TOOL_BLOB | FRAG_FOG | FRAG_DYNAMICLIGHTING;
     }
 
     public void rescanHeight() {

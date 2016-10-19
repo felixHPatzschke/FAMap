@@ -98,7 +98,7 @@ public class RenderableWater extends Renderable {
 
     public int getFragEnum()
     {
-        return FRAG_WATER;
+        return FRAG_WATER | FRAG_FOG;
     }
 
     public void setWaterShader(FAMap map) {
